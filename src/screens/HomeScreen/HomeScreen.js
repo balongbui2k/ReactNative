@@ -36,7 +36,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     zIndex: -1,
   },
-  headerContainer: {},
+  headerContainer: {
+    backgroundColor: 'green',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   locationContainer: {},
 });
 
