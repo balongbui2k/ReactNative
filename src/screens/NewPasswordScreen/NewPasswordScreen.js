@@ -11,7 +11,6 @@ const NewPasswordScreen = () => {
   const navigation = useNavigation();
 
   const onSubmitPressed = data => {
-    console.warn(data);
     navigation.navigate('Home');
   };
 

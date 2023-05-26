@@ -1,0 +1,1 @@
+const STATIC_IMAGE = [{}];

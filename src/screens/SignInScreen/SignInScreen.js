@@ -8,12 +8,13 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import Logo from '../../../assets/images/mainLogo.png';
+import Logo from '../../assets/images/2khung.png';
 import CustomInput from '../../components/CustomInput';
 import CustomButton from '../../components/CustomButton';
 import {useNavigation} from '@react-navigation/native';
 import {useForm} from 'react-hook-form';
 import axios from 'axios';
+import FastImage from 'react-native-fast-image';
 
 const SignInScreen = () => {
   const {height} = useWindowDimensions();
@@ -26,13 +27,10 @@ const SignInScreen = () => {
   } = useForm();
 
   const onSignInPressed = async () => {
-    console.log('data');
-
     try {
       const response = await axios.get(
         'https://jsonplaceholder.typicode.com/users',
       );
-      console.log(JSON.stringify(response, null, 2));
       navigation.navigate('Home');
     } catch (error) {
       console.error('Loi con me no roi');
@@ -51,10 +49,10 @@ const SignInScreen = () => {
     <ScrollView showsVerticalScrollIndicator={false}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={30}
+        keyboardVerticalOffset={0}
         style={styles.container}>
         <View style={styles.root}>
-          <Image
+          <FastImage
             source={Logo}
             style={[styles.logo, {height: height * 0.3}]}
             resizeMode="contain"
@@ -110,8 +108,11 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: '70%',
+    height: '40%',
     maxWidth: 300,
     maxHeight: 200,
+    marginBottom: 13,
+    marginLeft: 30,
   },
 });
 
