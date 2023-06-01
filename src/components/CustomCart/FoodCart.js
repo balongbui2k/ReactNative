@@ -6,6 +6,7 @@ import {
   Image,
   FlatList,
   TouchableWithoutFeedback,
+  TextInput,
 } from 'react-native';
 import React, {useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
@@ -42,7 +43,7 @@ const FoodItem = ({item, addToCart, removeFromCart}) => {
             {itemCount > 0 && (
               <>
                 <Feather
-                  name="minus-circle"
+                  name="minus-square"
                   size={22}
                   color="orange"
                   onPress={handleRemoveFromCart}
@@ -51,7 +52,7 @@ const FoodItem = ({item, addToCart, removeFromCart}) => {
               </>
             )}
             <Feather
-              name="plus-circle"
+              name="plus-square"
               size={22}
               color="orange"
               onPress={handleAddToCart}
@@ -112,7 +113,7 @@ export default function FoodCart() {
 
       {/* OrderBox */}
       {cartItems.length > 0 && (
-        <TouchableWithoutFeedback activeOpacity={0.8} onPress={() => {}}>
+        <TouchableWithoutFeedback onPress={() => {}}>
           <View style={styles.orderContainer}>
             <Feather
               name="shopping-cart"
@@ -197,8 +198,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 16,
     lineHeight: 15 * 1.4,
-    paddingRight: 5,
-    paddingLeft: 5,
+    paddingHorizontal: 6,
     borderRadius: 3,
   },
   //Cart Box-Notification
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   listContainer: {
-    paddingBottom: 80, // Add more space in Flat list
+    paddingBottom: 64, // Add more space in Flat list
   },
   orderContainer: {
     position: 'absolute',

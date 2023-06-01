@@ -1,14 +1,14 @@
 import React from 'react';
 import {Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 const CategoryMenuItem = ({name, logo, activeCategory, setActiveCategory}) => {
-  const Categories = CATEGORIES.filter(item => item.id === 'logo');
   return (
     <TouchableOpacity
       onPress={() => setActiveCategory(name)}
-      style={styles.category()}>
+      style={styles.category}>
       <FastImage
-        source={Categories.logo}
+        source={logo}
         style={styles.categoryIcon(activeCategory === name)}
       />
       <Text style={styles.categoryText(activeCategory === name)}>{name}</Text>
@@ -17,10 +17,9 @@ const CategoryMenuItem = ({name, logo, activeCategory, setActiveCategory}) => {
 };
 
 const styles = StyleSheet.create({
-  category: (marginTop = 0) => ({
+  category: {
     alignItems: 'center',
-    marginTop,
-  }),
+  },
   categoryIcon: isActive => ({
     height: 30,
     width: 30,

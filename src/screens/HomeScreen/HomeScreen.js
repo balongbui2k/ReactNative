@@ -16,19 +16,19 @@ import FastImage from 'react-native-fast-image';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {TextInput} from 'react-native-gesture-handler';
 import SortList from './SortList';
-import RESTAURANT_DATA from './../../../init_data/restaurants';
+import RESTAURANT_DATA from '../../../init_data/restaurants';
 import RestaurantDetails from './../../components/CustomRestaurants/RestaurantDetails';
 
 const HomeScreen = () => {
-  const [activeCategory, setActiveCategory] = useState();
+  const [activeCategory, setActiveCategory] = useState(null);
 
   const CategoryMenuItem = ({name, logo}) => (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={() => setActiveCategory(name)}>
       <View style={styles.categoryMenuItem}>
         <View
           style={[
             styles.categoryMenuLogo,
-            activeCategory === name && styles.activeCategoryMenuLogo === logo,
+            activeCategory === name && styles.activeCategoryMenuLogo,
           ]}>
           <FastImage source={logo} style={{width: 25, height: 25}} />
         </View>
@@ -36,8 +36,7 @@ const HomeScreen = () => {
           style={[
             styles.categoryMenuText,
             activeCategory === name && styles.activeCategoryMenuText,
-          ]}
-          onPress={() => setActiveCategory(name)}>
+          ]}>
           {name}
         </Text>
       </View>
@@ -235,8 +234,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   activeCategoryMenuLogo: {
-    borderWidth: 1,
-    color: 'red',
+    color: 'white',
   },
 });
 
