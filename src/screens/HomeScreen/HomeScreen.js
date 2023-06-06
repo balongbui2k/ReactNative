@@ -22,26 +22,24 @@ import RestaurantDetails from './../../components/CustomRestaurants/RestaurantDe
 const HomeScreen = () => {
   const [activeCategory, setActiveCategory] = useState(null);
 
-  const CategoryMenuItem = ({name, logo}) => (
-    <TouchableOpacity onPress={() => setActiveCategory(name)}>
-      <View style={styles.categoryMenuItem}>
-        <View
-          style={[
-            styles.categoryMenuLogo,
-            activeCategory === name && styles.activeCategoryMenuLogo,
-          ]}>
-          <FastImage source={logo} style={{width: 25, height: 25}} />
-        </View>
-        <Text
-          style={[
-            styles.categoryMenuText,
-            activeCategory === name && styles.activeCategoryMenuText,
-          ]}>
-          {name}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const CategoryMenuItem = ({
+    name,
+    logo,
+    activeCategory,
+    setActiveCategory,
+  }) => {
+    return (
+      <TouchableOpacity
+        onPress={() => setActiveCategory(name)}
+        style={styles.category}>
+        <FastImage
+          source={logo}
+          style={styles.categoryIcon(activeCategory === name)}
+        />
+        <Text style={styles.categoryText(activeCategory === name)}>{name}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={{flex: 1, marginBottom: 16}}>
@@ -61,7 +59,7 @@ const HomeScreen = () => {
             <MaterialIcons name="keyboard-arrow-down" size={16} color="#ffc" />
             <Feather
               name="bell"
-              size={24}
+              size={22}
               color="white"
               style={{position: 'absolute', right: 0}}
             />
@@ -200,8 +198,23 @@ const styles = StyleSheet.create({
   categoriesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    marginTop: 20,
+    marginTop: 25,
   },
+  category: {
+    alignItems: 'center',
+  },
+  categoryIcon: isActive => ({
+    height: 31.5,
+    width: 31.5,
+    opacity: isActive ? 1 : 0.5,
+  }),
+  categoryText: isActive => ({
+    fontSize: 11.5,
+    lineHeight: 10 * 1.4,
+    color: 'white',
+    marginTop: 5,
+    opacity: isActive ? 1 : 0.5,
+  }),
   listContainer: {
     paddingVertical: 5,
   },

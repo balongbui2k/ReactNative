@@ -25,7 +25,7 @@ const Navigation = () => {
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="NewPassword" component={NewPasswordScreen} /> */}
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Restaurant" component={RestaurantScreen} />
+        <Stack.Screen name="RestaurantScreen" component={RestaurantScreen} />
         <Stack.Screen name="HomeTabs" component={HomeTabs} />
         <Stack.Screen name="FoodCart" component={FoodCart} />
         <Stack.Screen name="OrderScreen" component={OrderScreen} />

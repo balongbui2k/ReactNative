@@ -14,6 +14,7 @@ import RESTAURANT_DATA from './../../../init_data/restaurants';
 import Images from '../../constants/Images';
 import CategoryListItem from './../CustomHomeMenu/CategoryListItem';
 import FoodCart from './../CustomCart/FoodCart';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ListHeader = () => (
   <View
@@ -61,7 +62,7 @@ const RestaurantScreen = ({navigation}) => {
     <View style={styles.container}>
       <StatusBar barStyle="default" translucent backgroundColor="transparent" />
       <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-        <Feather name="arrow-left" size={20} color="white" />
+        <Ionicons name="chevron-back-outline" size={30} color="white" />
       </TouchableOpacity>
       <Image
         source={require('../../assets/staticImages/gallery/square/hd/burgers.png')}
@@ -235,12 +236,11 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: 40,
-    left: 23,
+    top: 30,
+    left: 20,
     zIndex: 9,
     padding: 5,
     borderRadius: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
 });
 

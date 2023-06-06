@@ -26,7 +26,7 @@ const RestaurantDetails = ({
       <ScrollView>
         <TouchableWithoutFeedback
           activeOpacity={0.8}
-          onPress={() => navigation.navigate('Restaurant')}>
+          onPress={() => navigation.navigate('RestaurantScreen')}>
           <View style={styles.container}>
             <View>
               <Image
