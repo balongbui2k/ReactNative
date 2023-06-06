@@ -6,26 +6,27 @@ import {
   Image,
   FlatList,
   TouchableWithoutFeedback,
-  TextInput,
 } from 'react-native';
 import React, {useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import FOOD_DATA from './../../../init_data/foods';
 import {useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {addToCart, removeFromCart} from './../../actions/CartAction';
 
-//Plus and minus items in Cart
-const FoodItem = ({item, addToCart, removeFromCart}) => {
+const FoodItem = ({item}) => {
+  const dispatch = useDispatch();
   const [itemCount, setItemCount] = useState(0);
 
   const handleAddToCart = () => {
     setItemCount(prevCount => prevCount + 1);
-    addToCart(item);
+    dispatch(addToCart(item));
   };
 
   const handleRemoveFromCart = () => {
     if (itemCount > 0) {
       setItemCount(prevCount => prevCount - 1);
-      removeFromCart(item.id);
+      dispatch(removeFromCart(item));
     }
   };
 
@@ -64,44 +65,44 @@ const FoodItem = ({item, addToCart, removeFromCart}) => {
   );
 };
 
-//Use logic to add and remove on every single item
 export default function FoodCart() {
-  const [cartItems, setCartItems] = useState([]);
+  const cartItems = useSelector(state => state.cartStore?.carts);
+  console.log('cartItems>>>', cartItems);
+  console.log('cartItems.length>>>', Object.keys(cartItems).length);
 
-  // Add an item
-  const addToCart = foodItem => {
-    setCartItems(prevItems => [...prevItems, foodItem]);
-  };
-
-  // Remove an item
-  const removeFromCart = foodItemId => {
-    setCartItems(prevItems => {
-      const index = prevItems.findIndex(item => item.id === foodItemId);
-      if (index !== -1) {
-        const updatedItems = [...prevItems];
-        updatedItems.splice(index, 1);
-        return updatedItems;
-      }
-      return prevItems;
-    });
-  };
-
-  // Calculate total price
   const calculateTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price, 0);
+    let totalPrice = 0;
+    Object.values(cartItems).forEach(item => {
+      totalPrice += item.price * item.quantity;
+    });
+    return totalPrice;
   };
 
-  const renderItem = ({item}) => (
-    <FoodItem
-      item={item}
-      addToCart={addToCart}
-      removeFromCart={removeFromCart}
-    />
-  );
+  const renderItem = ({item}) => <FoodItem item={item} />;
   const navigation = useNavigation();
   const onOrderPressed = () => {
     navigation.navigate('OrderScreen');
   };
+
+  let totalQuantity = 0;
+  for (let i = 0; i < Object.keys(cartItems).length; i++) {
+    const item = cartItems[Object.keys(cartItems)[i]];
+    totalQuantity += item.quantity;
+    console.log('item>>>', item);
+  }
+
+  const renderCartItemQuantity = itemId => {
+    const item = cartItems[itemId];
+    if (item && item.quantity > 0) {
+      return (
+        <View key={item.id} style={styles.cartAlert}>
+          <Text style={styles.cartAlertText}>{item.quantity}</Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -111,9 +112,8 @@ export default function FoodCart() {
         contentContainerStyle={styles.listContainer}
       />
 
-      {/* OrderBox */}
-      {cartItems.length > 0 && (
-        <TouchableWithoutFeedback onPress={() => {}}>
+      {Object.keys(cartItems).length > 0 && (
+        <TouchableWithoutFeedback>
           <View style={styles.orderContainer}>
             <Feather
               name="shopping-cart"
@@ -121,9 +121,7 @@ export default function FoodCart() {
               color="orange"
               style={styles.cartIcon}
             />
-            <View style={styles.cartAlert}>
-              <Text style={styles.cartAlertText}>{cartItems.length}</Text>
-            </View>
+            <Text>{totalQuantity}</Text>
             <Text style={styles.cartText}>Cart</Text>
             <Text style={styles.cartTotalPrice}>${calculateTotalPrice()}</Text>
             <TouchableOpacity
@@ -137,6 +135,7 @@ export default function FoodCart() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   //Item Count text
   foodContainer: {

@@ -10,8 +10,8 @@ const cartReducer = (state = initialState, action) => {
       const existingItem = state.carts[action.payload.id];
       console.log('existingItem', existingItem);
       console.log('action', action);
-      // Không được trả về kiểu dữ liệu là boolean, vì existingItem cần trả về items
-      if (!!existingItem) {
+      if (existingItem) {
+        // Không được trả về kiểu dữ liệu là boolean, vì existingItem cần trả về là items
         return {
           ...state,
           carts: {
