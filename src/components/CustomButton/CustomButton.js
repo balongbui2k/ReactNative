@@ -1,9 +1,10 @@
 import React from 'react';
-import {Text, StyleSheet, Pressable} from 'react-native';
+import {Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 const CustomButton = ({onPress, text, type = 'PRIMARY', bgColor, fgColor}) => {
   return (
-    <Pressable
+    <TouchableOpacity
+      activeOpacity={0.7}
       onPress={onPress}
       style={[
         styles.container,
@@ -18,7 +19,7 @@ const CustomButton = ({onPress, text, type = 'PRIMARY', bgColor, fgColor}) => {
         ]}>
         {text}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 
@@ -37,9 +38,7 @@ const styles = StyleSheet.create({
     borderColor: '#fb4',
     borderWidth: 2,
   },
-  // container_TERTIARY: {
-  //   borderWidth: 1,
-  // },
+
   text: {
     fontWeight: 'bold',
     color: 'white',

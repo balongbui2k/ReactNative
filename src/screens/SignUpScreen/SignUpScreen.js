@@ -1,36 +1,37 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import CustomInput from '../../components/CustomInput';
-import CustomButton from '../../components/CustomButton';
+import {View, Text, ScrollView, StyleSheet} from 'react-native';
 import {useForm} from 'react-hook-form';
 import auth from '@react-native-firebase/auth';
+import CustomInput from './../../components/CustomInput/CustomInput';
+import CustomButton from './../../components/CustomButton/CustomButton';
 
-const EMAIL_REGEX =
-  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+\.com)$/;
+const EMAIL_REGEX = /@gmail\.com$/;
 
 const SignUpScreen = ({navigation}) => {
-  auth()
-    .createUserWithEmailAndPassword('balongbui2k@gmail.com', 'long290120')
-    .then(() => {
-      console.log('User account created & signed in!');
-    })
-    .catch(error => {
-      if (error.code === 'auth/email-already-in-use') {
-        console.log('That email address is already in use!');
-      }
-
-      if (error.code === 'auth/invalid-email') {
-        console.log('That email address is invalid!');
-      }
-
-      console.error(error);
-    });
-
   const {control, handleSubmit, watch} = useForm();
+  const [error, setError] = useState('');
+
   const pwd = watch('password');
 
-  const handleRegister = () => {
-    navigation.navigate('ConfirmEmail');
+  const handleRegister = async ({email, password}) => {
+    if (!email || !password) {
+      setError('Email and password cannot be empty!');
+      return;
+    }
+
+    try {
+      await auth().createUserWithEmailAndPassword(email, password);
+      console.warn('User account created & signed in!');
+      navigation.navigate('SignIn');
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        setError('That email address is already in use!');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('That email address is invalid!');
+      } else {
+        console.error(error);
+      }
+    }
   };
 
   const handleSignInPress = () => {
@@ -38,19 +39,19 @@ const SignUpScreen = ({navigation}) => {
   };
 
   const handleTermsOfUsePressed = () => {
-    console.warn('onTermsOfUsePressed');
+    setError('onTermsOfUsePressed');
   };
 
   const handlePrivacyPressed = () => {
-    console.warn('onPrivacyPressed');
+    setError('onPrivacyPressed');
   };
 
   const handleGoogleButtonPress = () => {
-    console.warn('onGoogleButtonPress');
+    setError('onGoogleButtonPress');
   };
 
   const handleFacebookButtonPress = () => {
-    console.warn('onFacebookButtonPress');
+    setError('onFacebookButtonPress');
   };
 
   return (
@@ -66,7 +67,7 @@ const SignUpScreen = ({navigation}) => {
             required: 'Email is required',
             pattern: {
               value: EMAIL_REGEX,
-              message: 'Email is invalid',
+              message: 'Email is invalid ',
             },
           }}
         />
@@ -124,6 +125,8 @@ const SignUpScreen = ({navigation}) => {
           onPress={handleSignInPress}
           type="TERTIARY"
         />
+
+        {error !== '' && <Text style={styles.errorText}>{error}</Text>}
       </View>
     </ScrollView>
   );
@@ -138,7 +141,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#051C60',
-    margin: 10,
+    marginVertical: 10,
   },
   text: {
     color: 'gray',
