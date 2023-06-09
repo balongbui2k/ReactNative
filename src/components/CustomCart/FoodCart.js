@@ -11,20 +11,22 @@ import React, {useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import FOOD_DATA from './../../../init_data/foods';
 import {useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {addToCart, removeFromCart} from './../../actions/CartAction';
 
-//Plus and minus items in Cart
-const FoodItem = ({item, addToCart, removeFromCart}) => {
+const FoodItem = ({item}) => {
+  const dispatch = useDispatch();
   const [itemCount, setItemCount] = useState(0);
 
   const handleAddToCart = () => {
     setItemCount(prevCount => prevCount + 1);
-    addToCart(item);
+    dispatch(addToCart(item));
   };
 
   const handleRemoveFromCart = () => {
     if (itemCount > 0) {
       setItemCount(prevCount => prevCount - 1);
-      removeFromCart(item.id);
+      dispatch(removeFromCart(item));
     }
   };
 
@@ -42,7 +44,7 @@ const FoodItem = ({item, addToCart, removeFromCart}) => {
             {itemCount > 0 && (
               <>
                 <Feather
-                  name="minus-circle"
+                  name="minus-square"
                   size={22}
                   color="orange"
                   onPress={handleRemoveFromCart}
@@ -51,7 +53,7 @@ const FoodItem = ({item, addToCart, removeFromCart}) => {
               </>
             )}
             <Feather
-              name="plus-circle"
+              name="plus-square"
               size={22}
               color="orange"
               onPress={handleAddToCart}
@@ -63,44 +65,36 @@ const FoodItem = ({item, addToCart, removeFromCart}) => {
   );
 };
 
-//Use logic to add and remove on every single item
 export default function FoodCart() {
-  const [cartItems, setCartItems] = useState([]);
+  const cartItems = useSelector(state => state.cartStore?.carts);
+  console.log('cartItems>>>', cartItems);
 
-  // Add an item
-  const addToCart = foodItem => {
-    setCartItems(prevItems => [...prevItems, foodItem]);
-  };
-
-  // Remove an item
-  const removeFromCart = foodItemId => {
-    setCartItems(prevItems => {
-      const index = prevItems.findIndex(item => item.id === foodItemId);
-      if (index !== -1) {
-        const updatedItems = [...prevItems];
-        updatedItems.splice(index, 1);
-        return updatedItems;
-      }
-      return prevItems;
-    });
-  };
-
-  // Calculate total price
   const calculateTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price, 0);
+    let totalPrice = 0;
+    Object.values(cartItems).forEach(item => {
+      totalPrice += item.price * item.quantity;
+    });
+    return totalPrice;
   };
 
-  const renderItem = ({item}) => (
-    <FoodItem
-      item={item}
-      addToCart={addToCart}
-      removeFromCart={removeFromCart}
-    />
-  );
+  const renderItem = ({item}) => <FoodItem item={item} />;
   const navigation = useNavigation();
-  const onOrderPressed = () => {
+  const onCheckoutPressed = () => {
     navigation.navigate('OrderScreen');
   };
+
+  // let totalQuantity = 0;
+  // for (let i = 0; i < Object.keys(cartItems).length; i++) {
+  //   const item = cartItems[Object.keys(cartItems)[i]];
+  //   totalQuantity += item.quantity;
+  //   console.log('item>>>', item);
+  // }
+
+  const totalQuantity = Object.values(cartItems).reduce(
+    (total, item) => total + item.quantity,
+    0,
+  );
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -110,25 +104,24 @@ export default function FoodCart() {
         contentContainerStyle={styles.listContainer}
       />
 
-      {/* OrderBox */}
-      {cartItems.length > 0 && (
-        <TouchableWithoutFeedback activeOpacity={0.8} onPress={() => {}}>
-          <View style={styles.orderContainer}>
+      {Object.keys(cartItems).length > 0 && (
+        <TouchableWithoutFeedback>
+          <View style={styles.checkoutContainer}>
             <Feather
               name="shopping-cart"
               size={24}
               color="orange"
               style={styles.cartIcon}
             />
-            <View style={styles.cartAlert}>
-              <Text style={styles.cartAlertText}>{cartItems.length}</Text>
+            <View style={styles.totalQuantityAlert}>
+              <Text style={styles.totalQuantityText}>{totalQuantity}</Text>
             </View>
             <Text style={styles.cartText}>Cart</Text>
             <Text style={styles.cartTotalPrice}>${calculateTotalPrice()}</Text>
             <TouchableOpacity
-              style={styles.orderButton}
-              onPress={onOrderPressed}>
-              <Text style={styles.orderButtonText}>Order</Text>
+              style={styles.checkoutButton}
+              onPress={onCheckoutPressed}>
+              <Text style={styles.checkoutButtonText}>Checkout</Text>
             </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>
@@ -136,6 +129,7 @@ export default function FoodCart() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   //Item Count text
   foodContainer: {
@@ -166,7 +160,6 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     width: '100%',
-
     fontSize: 13,
     lineHeight: 13 * 1.4,
     marginBottom: 8,
@@ -197,8 +190,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 16,
     lineHeight: 15 * 1.4,
-    paddingRight: 5,
-    paddingLeft: 5,
+    paddingHorizontal: 6,
     borderRadius: 3,
   },
   //Cart Box-Notification
@@ -207,9 +199,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   listContainer: {
-    paddingBottom: 80, // Add more space in Flat list
+    paddingBottom: 64, // Add more space in Flat list
   },
-  orderContainer: {
+  checkoutContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -223,22 +215,24 @@ const styles = StyleSheet.create({
   cartIcon: {
     marginLeft: 16,
   },
-  cartAlert: {
+  totalQuantityAlert: {
     position: 'absolute',
     backgroundColor: 'orange',
     borderRadius: 10,
-    width: 15,
-    height: 15,
+    width: 13,
+    height: 13,
     justifyContent: 'center',
     alignItems: 'center',
-    top: 12,
+    top: 13,
     left: 26,
     marginLeft: 25,
   },
-  cartAlertText: {
+  totalQuantityText: {
+    fontSize: 7.8,
     color: 'white',
-    fontWeight: 'bold',
-    fontSize: 10,
+    fontWeight: '500',
+    padding: 1,
+    paddingLeft: 1,
   },
   cartText: {
     color: 'black',
@@ -250,17 +244,17 @@ const styles = StyleSheet.create({
     color: 'orange',
     fontWeight: '800',
     fontSize: 16,
-    marginLeft: '39%',
+    marginLeft: '32%',
   },
-  orderButton: {
+  checkoutButton: {
     marginLeft: 'auto',
     backgroundColor: 'orange',
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingVertical: 8,
     borderRadius: 4,
-    marginRight: 10,
+    marginRight: 16,
   },
-  orderButtonText: {
+  checkoutButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '700',

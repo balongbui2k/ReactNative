@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   activeCategoryText: {
     fontSize: 13,
     lineHeight: 13 * 1.4,
-    // fontWeight: 'bold',
+    fontWeight: 'bold',
     color: 'black',
   },
   inActiveCategoryText: {

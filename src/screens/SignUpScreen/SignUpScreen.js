@@ -1,32 +1,57 @@
-import React from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import CustomInput from '../../components/CustomInput';
-import CustomButton from '../../components/CustomButton';
-import {useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
+import {View, Text, ScrollView, StyleSheet} from 'react-native';
 import {useForm} from 'react-hook-form';
+import auth from '@react-native-firebase/auth';
+import CustomInput from './../../components/CustomInput/CustomInput';
+import CustomButton from './../../components/CustomButton/CustomButton';
 
-const EMAIL_REGEX =
-  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const EMAIL_REGEX = /@gmail\.com$/;
 
-const SignUpScreen = () => {
+const SignUpScreen = ({navigation}) => {
   const {control, handleSubmit, watch} = useForm();
-  const pwd = watch('password');
-  const navigation = useNavigation();
+  const [error, setError] = useState('');
 
-  const onRegisterPressed = () => {
-    navigation.navigate('ConfirmEmail');
+  const pwd = watch('password');
+
+  const handleRegister = async ({email, password}) => {
+    if (!email || !password) {
+      setError('Email and password cannot be empty!');
+      return;
+    }
+
+    try {
+      await auth().createUserWithEmailAndPassword(email, password);
+      console.warn('User account created & signed in!');
+      navigation.navigate('SignIn');
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        setError('That email address is already in use!');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('That email address is invalid!');
+      } else {
+        console.error(error);
+      }
+    }
   };
 
-  const onSignInPress = () => {
+  const handleSignInPress = () => {
     navigation.navigate('SignIn');
   };
 
-  const onTermsOfUsePressed = () => {
-    console.warn('onTermsOfUsePressed');
+  const handleTermsOfUsePressed = () => {
+    setError('onTermsOfUsePressed');
   };
 
-  const onPrivacyPressed = () => {
-    console.warn('onPrivacyPressed');
+  const handlePrivacyPressed = () => {
+    setError('onPrivacyPressed');
+  };
+
+  const handleGoogleButtonPress = () => {
+    setError('onGoogleButtonPress');
+  };
+
+  const handleFacebookButtonPress = () => {
+    setError('onFacebookButtonPress');
   };
 
   return (
@@ -35,28 +60,15 @@ const SignUpScreen = () => {
         <Text style={styles.title}>Create an account</Text>
 
         <CustomInput
-          name="username"
-          control={control}
-          placeholder="Username"
-          rules={{
-            required: 'Username is required',
-            minLength: {
-              value: 3,
-              message: 'Username should be at least 3 characters long',
-            },
-            maxLength: {
-              value: 24,
-              message: 'Username should be max 24 characters long',
-            },
-          }}
-        />
-        <CustomInput
           name="email"
           control={control}
           placeholder="Email"
           rules={{
             required: 'Email is required',
-            pattern: {value: EMAIL_REGEX, message: 'Email is invalid'},
+            pattern: {
+              value: EMAIL_REGEX,
+              message: 'Email is invalid ',
+            },
           }}
         />
         <CustomInput
@@ -78,31 +90,43 @@ const SignUpScreen = () => {
           placeholder="Repeat Password"
           secureTextEntry
           rules={{
-            validate: value => value === pwd || 'Password do not match',
+            validate: value => value === pwd || 'Passwords do not match',
           }}
         />
 
-        <CustomButton
-          text="Register"
-          onPress={handleSubmit(onRegisterPressed)}
-        />
+        <CustomButton text="Register" onPress={handleSubmit(handleRegister)} />
 
         <Text style={styles.text}>
           By registering, you confirm that you accept our{' '}
-          <Text style={styles.link} onPress={onTermsOfUsePressed}>
+          <Text style={styles.link} onPress={handleTermsOfUsePressed}>
             Terms of Use
           </Text>{' '}
           and{' '}
-          <Text style={styles.link} onPress={onPrivacyPressed}>
+          <Text style={styles.link} onPress={handlePrivacyPressed}>
             Privacy Policy
           </Text>
         </Text>
 
+        <View style={styles.socialButtonContainer}>
+          <CustomButton
+            text="Sign up with Google"
+            onPress={handleGoogleButtonPress}
+            type="PRIMARY"
+          />
+          <CustomButton
+            text="Sign up with Facebook"
+            onPress={handleFacebookButtonPress}
+            type="PRIMARY"
+          />
+        </View>
+
         <CustomButton
           text="Have an account? Sign in"
-          onPress={onSignInPress}
+          onPress={handleSignInPress}
           type="TERTIARY"
         />
+
+        {error !== '' && <Text style={styles.errorText}>{error}</Text>}
       </View>
     </ScrollView>
   );
@@ -117,7 +141,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#051C60',
-    margin: 10,
+    marginVertical: 10,
   },
   text: {
     color: 'gray',

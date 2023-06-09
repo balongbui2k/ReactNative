@@ -1,3 +1,4 @@
+import React, {useState} from 'react';
 import {
   StyleSheet,
   StatusBar,
@@ -5,21 +6,15 @@ import {
   Text,
   FlatList,
   Image,
-  SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState} from 'react';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Feather from 'react-native-vector-icons/Feather';
 import Separator from './../CustomHomeMenu/Separator';
 import RESTAURANT_DATA from './../../../init_data/restaurants';
-import {useSelector} from 'react-redux';
-import {useDispatch} from 'react-redux';
 import Images from '../../constants/Images';
 import CategoryListItem from './../CustomHomeMenu/CategoryListItem';
-
 import FoodCart from './../CustomCart/FoodCart';
-import Feather from 'react-native-vector-icons/Feather';
-import CartScreen from '../../screens/CartScreen';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ListHeader = () => (
   <View
@@ -54,14 +49,21 @@ const ListFooter = () => (
   </View>
 );
 
-const RestaurantScreen = () => {
+const RestaurantScreen = ({navigation}) => {
   const [selectedCategory, setSelectedCategory] = useState();
 
   const restaurantId = RESTAURANT_DATA.find(item => item.id === '100');
 
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="default" translucent backgroundColor="transparent" />
+      <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
+        <Ionicons name="chevron-back-outline" size={30} color="white" />
+      </TouchableOpacity>
       <Image
         source={require('../../assets/staticImages/gallery/square/hd/burgers.png')}
         style={styles.backgroundImage}
@@ -75,7 +77,7 @@ const RestaurantScreen = () => {
           </View>
           <Text style={styles.tagText}>{restaurantId?.tags?.join(' • ')}</Text>
           <View style={styles.ratingReviewsContainer}>
-            <FontAwesome name="star" size={18} color="orange" />
+            <Feather name="star" size={18} color="orange" />
             <Text style={styles.ratingText}>4.2</Text>
             <Text style={styles.reviewsText}>(455 Reviews)</Text>
           </View>
@@ -99,8 +101,7 @@ const RestaurantScreen = () => {
             <View style={styles.rowAndCenter}>
               <Image style={styles.deliveryDetailIcon} source={Images.MARKER} />
               <Text style={styles.deliveryDetailText}>
-                {restaurantId?.distance}
-                km
+                {restaurantId?.distance}km
               </Text>
             </View>
             <View style={styles.restaurantType}>
@@ -114,8 +115,8 @@ const RestaurantScreen = () => {
               data={restaurantId?.categories}
               keyExtractor={item => item}
               horizontal
-              ListHeaderComponent={() => <ListHeader />}
-              ListFooterComponent={() => <ListFooter />}
+              ListHeaderComponent={ListHeader}
+              ListFooterComponent={ListFooter}
               showsHorizontalScrollIndicator={false}
               renderItem={({item}) => (
                 <CategoryListItem
@@ -132,6 +133,7 @@ const RestaurantScreen = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -149,7 +151,7 @@ const styles = StyleSheet.create({
     height: '75%',
     position: 'absolute',
     bottom: 0,
-    // paddingBottom: 8,
+    width: '100%',
   },
   titleContainer: {
     flexDirection: 'row',
@@ -232,5 +234,14 @@ const styles = StyleSheet.create({
     marginTop: 5,
     borderRadius: 2,
   },
+  backButton: {
+    position: 'absolute',
+    top: 30,
+    left: 20,
+    zIndex: 9,
+    padding: 5,
+    borderRadius: 20,
+  },
 });
+
 export default RestaurantScreen;

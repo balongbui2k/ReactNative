@@ -26,9 +26,9 @@ const ForgotPasswordScreen = () => {
         <CustomInput
           name="username"
           control={control}
-          placeholder="Username"
+          placeholder="Email"
           rules={{
-            required: 'Username is required',
+            required: 'Email is required',
           }}
         />
 
