@@ -6,6 +6,8 @@ import {
   StatusBar,
   ScrollView,
   TouchableOpacity,
+  SafeAreaView,
+  TextInput,
 } from 'react-native';
 import Separator from '../../components/CustomHomeMenu/Separator';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -13,8 +15,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import CATEGORIES from '../../constants/Foods';
 import FastImage from 'react-native-fast-image';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {TextInput} from 'react-native-gesture-handler';
 import SortList from './SortList';
 import RESTAURANT_DATA from '../../../init_data/restaurants';
 import RestaurantDetails from './../../components/CustomRestaurants/RestaurantDetails';

@@ -68,7 +68,6 @@ const FoodItem = ({item}) => {
 export default function FoodCart() {
   const cartItems = useSelector(state => state.cartStore?.carts);
   console.log('cartItems>>>', cartItems);
-  console.log('cartItems.length>>>', Object.keys(cartItems).length);
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;
@@ -80,28 +79,21 @@ export default function FoodCart() {
 
   const renderItem = ({item}) => <FoodItem item={item} />;
   const navigation = useNavigation();
-  const onOrderPressed = () => {
+  const onCheckoutPressed = () => {
     navigation.navigate('OrderScreen');
   };
 
-  let totalQuantity = 0;
-  for (let i = 0; i < Object.keys(cartItems).length; i++) {
-    const item = cartItems[Object.keys(cartItems)[i]];
-    totalQuantity += item.quantity;
-    console.log('item>>>', item);
-  }
+  // let totalQuantity = 0;
+  // for (let i = 0; i < Object.keys(cartItems).length; i++) {
+  //   const item = cartItems[Object.keys(cartItems)[i]];
+  //   totalQuantity += item.quantity;
+  //   console.log('item>>>', item);
+  // }
 
-  const renderCartItemQuantity = itemId => {
-    const item = cartItems[itemId];
-    if (item && item.quantity > 0) {
-      return (
-        <View key={item.id} style={styles.cartAlert}>
-          <Text style={styles.cartAlertText}>{item.quantity}</Text>
-        </View>
-      );
-    }
-    return null;
-  };
+  const totalQuantity = Object.values(cartItems).reduce(
+    (total, item) => total + item.quantity,
+    0,
+  );
 
   return (
     <View style={styles.container}>
@@ -114,20 +106,22 @@ export default function FoodCart() {
 
       {Object.keys(cartItems).length > 0 && (
         <TouchableWithoutFeedback>
-          <View style={styles.orderContainer}>
+          <View style={styles.checkoutContainer}>
             <Feather
               name="shopping-cart"
               size={24}
               color="orange"
               style={styles.cartIcon}
             />
-            <Text>{totalQuantity}</Text>
+            <View style={styles.totalQuantityAlert}>
+              <Text style={styles.totalQuantityText}>{totalQuantity}</Text>
+            </View>
             <Text style={styles.cartText}>Cart</Text>
             <Text style={styles.cartTotalPrice}>${calculateTotalPrice()}</Text>
             <TouchableOpacity
-              style={styles.orderButton}
-              onPress={onOrderPressed}>
-              <Text style={styles.orderButtonText}>Order</Text>
+              style={styles.checkoutButton}
+              onPress={onCheckoutPressed}>
+              <Text style={styles.checkoutButtonText}>Checkout</Text>
             </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>
@@ -166,7 +160,6 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     width: '100%',
-
     fontSize: 13,
     lineHeight: 13 * 1.4,
     marginBottom: 8,
@@ -208,7 +201,7 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingBottom: 64, // Add more space in Flat list
   },
-  orderContainer: {
+  checkoutContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -222,22 +215,24 @@ const styles = StyleSheet.create({
   cartIcon: {
     marginLeft: 16,
   },
-  cartAlert: {
+  totalQuantityAlert: {
     position: 'absolute',
     backgroundColor: 'orange',
     borderRadius: 10,
-    width: 15,
-    height: 15,
+    width: 13,
+    height: 13,
     justifyContent: 'center',
     alignItems: 'center',
-    top: 12,
+    top: 13,
     left: 26,
     marginLeft: 25,
   },
-  cartAlertText: {
+  totalQuantityText: {
+    fontSize: 7.8,
     color: 'white',
-    fontWeight: 'bold',
-    fontSize: 10,
+    fontWeight: '500',
+    padding: 1,
+    paddingLeft: 1,
   },
   cartText: {
     color: 'black',
@@ -249,17 +244,17 @@ const styles = StyleSheet.create({
     color: 'orange',
     fontWeight: '800',
     fontSize: 16,
-    marginLeft: '39%',
+    marginLeft: '32%',
   },
-  orderButton: {
+  checkoutButton: {
     marginLeft: 'auto',
     backgroundColor: 'orange',
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingVertical: 8,
     borderRadius: 4,
-    marginRight: 10,
+    marginRight: 16,
   },
-  orderButtonText: {
+  checkoutButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '700',

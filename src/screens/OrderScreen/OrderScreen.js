@@ -2,48 +2,100 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   StatusBar,
   Image,
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import React from 'react';
-import {useSelector} from 'react-redux';
+import React, {useState} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Images from '../../constants/Images';
 import Feather from 'react-native-vector-icons/Feather';
+import {addToCart, removeFromCart} from './../../actions/CartAction';
 
 const OrderScreen = ({navigation}) => {
-  const cart = useSelector(state => state?.cart);
-  const calculateItemTotal = () => {
-    return cart?.cartItems?.reduce(
-      (total, item) => total + item?.price || 0,
+  const cartItems = useSelector(state => state.cartStore?.carts);
+
+  console.log('cartItems>>>', cartItems);
+
+  //* How to calculate the grandTotal
+
+  const calculateTotalPrice = () => {
+    const totalPrice = Object.values(cartItems).reduce(
+      (total, item) => total + item.price * item.quantity,
       0,
     );
+    return totalPrice;
   };
 
   const calculateDiscount = () => {
-    return cart?.discount || 10;
+    return cartItems?.discount || 10;
   };
 
+  const discountPrice = calculateDiscount();
   const calculateGrandTotal = () => {
-    const itemTotal = calculateItemTotal();
-    const discount = calculateDiscount();
-    return itemTotal - discount;
+    return calculateTotalPrice() - discountPrice;
   };
 
-  const renderFoodCartItem = ({item}) => {
+  const purchasedItems = Object.values(cartItems);
+
+  const onOrderPressed = () => {
+    console.warn('Order thanh cong');
+  };
+
+  //! Dirty code
+  const FoodItem = ({item}) => {
+    const dispatch = useDispatch();
+    const [itemCount, setItemCount] = useState(item.quantity);
+
+    const handleAddToCart = () => {
+      setItemCount(prevCount => prevCount + 1);
+      dispatch(addToCart(item));
+    };
+
+    const handleRemoveFromCart = () => {
+      if (itemCount > 0) {
+        setItemCount(prevCount => prevCount - 1);
+        dispatch(removeFromCart(item));
+      }
+    };
+
     return (
-      <View style={styles.foodCartItemContainer} key={item?.food}>
-        {console.log('item>>>', item)}
-        <Text style={styles.foodCartItemName}>{item?.name}</Text>
-        <Text style={styles.foodCartItemPrice}>
-          $ {item?.price?.toFixed(2)}
-        </Text>
+      <View style={styles.foodContainer}>
+        <Image style={styles.image} source={item.image} />
+        <View style={styles.detailContainer}>
+          <View>
+            <Text style={styles.titleText}>{item.name}</Text>
+            <Text style={styles.descriptionText}>{item.description}</Text>
+          </View>
+          <View style={styles.footerContainer}>
+            <Text style={styles.priceText}>${item.price}</Text>
+            <View style={styles.itemAddContainer}>
+              {itemCount > 0 && (
+                <>
+                  <Feather
+                    name="minus-square"
+                    size={22}
+                    color="orange"
+                    onPress={handleRemoveFromCart}
+                  />
+                  <Text style={styles.itemCountText}>{itemCount}</Text>
+                </>
+              )}
+              <Feather
+                name="plus-square"
+                size={22}
+                color="orange"
+                onPress={handleAddToCart}
+              />
+            </View>
+          </View>
+        </View>
       </View>
     );
   };
+
+  const renderItem = ({item}) => <FoodItem item={item} />;
 
   return (
     <View style={styles.container}>
@@ -57,79 +109,71 @@ const OrderScreen = ({navigation}) => {
           name="chevron-back-outline"
           size={30}
           onPress={() => navigation.goBack()}
+          style={{marginTop: 16}}
         />
         <Text style={styles.headerTitle}>My Cart</Text>
       </View>
-      {cart?.cartItems?.length > 0 ? (
-        <View style={styles.cartContainer}>
-          <FlatList
-            data={cart?.cartItems}
-            keyExtractor={item => item?.food?.id}
-            renderItem={renderFoodCartItem}
-            contentContainerStyle={styles.foodList}
+      <FlatList //* Render list's bought
+        data={purchasedItems}
+        renderItem={renderItem}
+        keyExtractor={item => item.id.toString()}
+      />
+      <View style={styles.promoCodeContainer}>
+        <View style={styles.rowAndCenter}>
+          <Feather
+            name="gift"
+            size={30}
+            color={'orange'}
+            style={{paddingLeft: 8}}
           />
-          <View style={styles.promoCodeContainer}>
-            <View style={styles.rowAndCenter}>
-              <Feather name="gift" size={30} color={'orange'} />
-              <Text style={styles.promoCodeText}>Add Promo Code</Text>
-            </View>
-            <Ionicons
-              name="chevron-forward-outline"
-              size={20}
-              color={'black'}
-            />
-          </View>
-          <View style={styles.amountContainer}>
-            <View style={styles.amountSubContainer}>
-              <Text style={styles.amountLabelText}>Item Total</Text>
-              <Text style={styles.amountText}>
-                $ {calculateItemTotal()?.toFixed(2)}
-              </Text>
-            </View>
-            <View style={styles.amountSubContainer}>
-              <Text style={styles.amountLabelText}>Discount</Text>
-              <Text style={styles.amountText}>
-                $ {calculateDiscount()?.toFixed(2)}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.totalContainer}>
-            <Text style={styles.totalLabelText}>Total</Text>
-            <Text style={styles.totalText}>
-              $ {calculateGrandTotal()?.toFixed(2)}
-            </Text>
-          </View>
-          <TouchableOpacity style={styles.checkoutButton}>
-            <View style={styles.rowAndCenter}>
-              <Ionicons name="cart-outline" color={'white'} size={20} />
-              <Text style={styles.checkoutText}>Checkout</Text>
-            </View>
-            <Text style={styles.checkoutText}>
-              $ {calculateGrandTotal()?.toFixed(2)}
-            </Text>
-          </TouchableOpacity>
+          <Text style={styles.promoCodeText}>Add Promo Code</Text>
         </View>
-      ) : (
-        <View style={styles.emptyCartContainer}>
-          <Image
-            style={styles.emptyCartImage}
-            source={Images.EMPTY_CART}
-            resizeMode="contain"
-          />
-          <Text style={styles.emptyCartText}>Cart Empty</Text>
-          <Text style={styles.emptyCartSubText}>
-            Go ahead and order some tasty food
+        <Ionicons name="chevron-forward-outline" size={20} color={'black'} />
+      </View>
+      <View style={styles.amountContainer}>
+        <View style={styles.amountSubContainer}>
+          <Text style={styles.amountLabelText}>Item Total</Text>
+          <Text style={styles.amountText}>
+            $ {calculateTotalPrice()?.toFixed(2)}
           </Text>
-          <TouchableOpacity style={styles.addButtonEmpty}>
-            <Ionicons name="add" color={'white'} size={20} />
-            <Text style={styles.addButtonEmptyText}>Add Food</Text>
-          </TouchableOpacity>
         </View>
-      )}
+
+        <View style={styles.amountSubContainer}>
+          <Text style={styles.amountLabelText}>Discount</Text>
+          <Text style={styles.amountText}>
+            $ {calculateDiscount()?.toFixed(2)}
+          </Text>
+        </View>
+        <View style={styles.amountSubContainer}>
+          <Text style={styles.amountLabelText}>Delivery Fee</Text>
+          <Text
+            style={{
+              fontSize: 15,
+              fontWeight: '600',
+              color: '#199',
+              paddingRight: 8,
+            }}>
+            Free
+          </Text>
+        </View>
+      </View>
+      <View style={styles.totalContainer}>
+        <Text style={styles.totalLabelText}>Total</Text>
+        <Text style={styles.totalText}>
+          $ {calculateGrandTotal()?.toFixed(2)}
+        </Text>
+      </View>
+      <TouchableOpacity style={styles.orderButton} onPress={onOrderPressed}>
+        <View style={styles.rowAndCenter}>
+          <Text style={styles.orderText}>Order</Text>
+        </View>
+        <Text style={styles.orderTotalText}>
+          $ {calculateGrandTotal()?.toFixed(2)}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -138,7 +182,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 30,
+    paddingVertical: 10,
     paddingHorizontal: 23,
   },
   headerTitle: {
@@ -148,36 +192,76 @@ const styles = StyleSheet.create({
     width: 80,
     textAlign: 'center',
     marginLeft: 110,
-  },
-  cartContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 10,
+    marginTop: 16,
   },
   foodList: {
-    paddingBottom: 20,
-    borderWidth: 1,
+    paddingBottom: 10,
   },
-  foodCartItemContainer: {
+  foodContainer: {
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginVertical: 4,
+    borderRadius: 8,
+    elevation: 2,
+    backgroundColor: 'white',
   },
-  foodCartItemName: {
-    fontSize: 16,
-    fontWeight: '600',
+  image: {
+    width: 100,
+    height: 100,
+    margin: 6,
+  },
+  detailContainer: {
+    marginHorizontal: 6,
+    width: '64%',
+  },
+  titleText: {
     color: 'black',
-  },
-  foodCartItemPrice: {
+    fontWeight: 'bold',
+    width: '86%',
     fontSize: 16,
-    fontWeight: '600',
-    color: 'green',
+    lineHeight: 16 * 1.4,
+    marginBottom: 8,
+  },
+  descriptionText: {
+    width: '100%',
+    fontSize: 13,
+    lineHeight: 13 * 1.4,
+    marginBottom: 8,
+  },
+  priceText: {
+    color: 'orange',
+    fontWeight: 'bold',
+    fontSize: 16,
+    lineHeight: 14 * 1.4,
+    width: '40%',
+  },
+  footerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 5,
+    width: '100%',
+  },
+  itemAddContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+  },
+
+  itemCountText: {
+    color: 'black',
+    fontSize: 16,
+    lineHeight: 15 * 1.4,
+    paddingHorizontal: 6,
+    borderRadius: 3,
   },
   promoCodeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: 8,
     borderTopWidth: 0.5,
     borderBottomWidth: 0.5,
     justifyContent: 'space-between',
@@ -192,6 +276,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  //* Calculating
   amountContainer: {
     paddingVertical: 20,
     borderBottomWidth: 0.5,
@@ -199,86 +284,62 @@ const styles = StyleSheet.create({
   amountSubContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: 3,
+    paddingVertical: 8,
   },
   amountLabelText: {
     fontSize: 15,
     fontWeight: '600',
-    color: 'green',
+    color: 'black',
+    paddingHorizontal: 8,
   },
   amountText: {
     fontSize: 15,
     fontWeight: '600',
     color: 'black',
+    paddingRight: 8,
   },
   totalContainer: {
-    paddingVertical: 15,
+    paddingVertical: 20,
     borderBottomWidth: 0.5,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: 16,
   },
   totalLabelText: {
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 25,
+    fontWeight: '500',
+    paddingLeft: 8,
     color: 'black',
   },
   totalText: {
-    fontSize: 20,
+    fontSize: 23,
     fontWeight: '600',
-    color: 'green',
+    color: 'black',
+    paddingTop: 4,
+    paddingRight: 8,
   },
-  checkoutButton: {
+  //* Order
+  orderButton: {
     flexDirection: 'row',
-    backgroundColor: 'green',
+    backgroundColor: '#199',
     alignSelf: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: 10,
-    paddingVertical: 10,
-    marginTop: 10,
+    paddingVertical: 14,
+    marginBottom: 16,
   },
-  checkoutText: {
+  orderText: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: 'white',
+  },
+  orderTotalText: {
     fontSize: 16,
     fontWeight: '600',
     color: 'white',
-    marginLeft: 8,
-  },
-  emptyCartContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyCartText: {
-    fontSize: 30,
-    fontWeight: '500',
-    color: 'green',
-  },
-  emptyCartSubText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: 'grey',
-  },
-  addButtonEmpty: {
-    flexDirection: 'row',
-    backgroundColor: 'orange',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginTop: 10,
-    justifyContent: 'space-evenly',
-    elevation: 3,
-    alignItems: 'center',
-  },
-  addButtonEmptyText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: 'white',
-    marginLeft: 10,
-  },
-  emptyCartImage: {
-    height: 150,
-    width: 150,
+    marginLeft: '62%',
   },
 });
 
