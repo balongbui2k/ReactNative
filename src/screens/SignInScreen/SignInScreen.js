@@ -26,15 +26,8 @@ const SignInScreen = () => {
     formState: {errors},
   } = useForm();
 
-  const onSignInPressed = async () => {
-    try {
-      const response = await axios.get(
-        'https://jsonplaceholder.typicode.com/users',
-      );
-      navigation.navigate('Home');
-    } catch (error) {
-      console.error('Loi con me no roi');
-    }
+  const onSignInPressed = () => {
+    navigation.navigate('Home');
   };
 
   const onForgotPasswordPressed = () => {
@@ -60,9 +53,9 @@ const SignInScreen = () => {
 
           <CustomInput
             name="username"
-            placeholder="Username"
+            placeholder="Example@gmail.com"
             control={control}
-            rules={{required: 'Username is required'}}
+            rules={{required: 'Email is required'}}
           />
 
           <CustomInput

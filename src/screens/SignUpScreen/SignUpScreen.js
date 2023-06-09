@@ -1,32 +1,56 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import CustomInput from '../../components/CustomInput';
 import CustomButton from '../../components/CustomButton';
-import {useNavigation} from '@react-navigation/native';
 import {useForm} from 'react-hook-form';
+import auth from '@react-native-firebase/auth';
 
 const EMAIL_REGEX =
-  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+\.com)$/;
 
-const SignUpScreen = () => {
+const SignUpScreen = ({navigation}) => {
+  auth()
+    .createUserWithEmailAndPassword('balongbui2k@gmail.com', 'long290120')
+    .then(() => {
+      console.log('User account created & signed in!');
+    })
+    .catch(error => {
+      if (error.code === 'auth/email-already-in-use') {
+        console.log('That email address is already in use!');
+      }
+
+      if (error.code === 'auth/invalid-email') {
+        console.log('That email address is invalid!');
+      }
+
+      console.error(error);
+    });
+
   const {control, handleSubmit, watch} = useForm();
   const pwd = watch('password');
-  const navigation = useNavigation();
 
-  const onRegisterPressed = () => {
+  const handleRegister = () => {
     navigation.navigate('ConfirmEmail');
   };
 
-  const onSignInPress = () => {
+  const handleSignInPress = () => {
     navigation.navigate('SignIn');
   };
 
-  const onTermsOfUsePressed = () => {
+  const handleTermsOfUsePressed = () => {
     console.warn('onTermsOfUsePressed');
   };
 
-  const onPrivacyPressed = () => {
+  const handlePrivacyPressed = () => {
     console.warn('onPrivacyPressed');
+  };
+
+  const handleGoogleButtonPress = () => {
+    console.warn('onGoogleButtonPress');
+  };
+
+  const handleFacebookButtonPress = () => {
+    console.warn('onFacebookButtonPress');
   };
 
   return (
@@ -35,28 +59,15 @@ const SignUpScreen = () => {
         <Text style={styles.title}>Create an account</Text>
 
         <CustomInput
-          name="username"
-          control={control}
-          placeholder="Username"
-          rules={{
-            required: 'Username is required',
-            minLength: {
-              value: 3,
-              message: 'Username should be at least 3 characters long',
-            },
-            maxLength: {
-              value: 24,
-              message: 'Username should be max 24 characters long',
-            },
-          }}
-        />
-        <CustomInput
           name="email"
           control={control}
           placeholder="Email"
           rules={{
             required: 'Email is required',
-            pattern: {value: EMAIL_REGEX, message: 'Email is invalid'},
+            pattern: {
+              value: EMAIL_REGEX,
+              message: 'Email is invalid',
+            },
           }}
         />
         <CustomInput
@@ -78,29 +89,39 @@ const SignUpScreen = () => {
           placeholder="Repeat Password"
           secureTextEntry
           rules={{
-            validate: value => value === pwd || 'Password do not match',
+            validate: value => value === pwd || 'Passwords do not match',
           }}
         />
 
-        <CustomButton
-          text="Register"
-          onPress={handleSubmit(onRegisterPressed)}
-        />
+        <CustomButton text="Register" onPress={handleSubmit(handleRegister)} />
 
         <Text style={styles.text}>
           By registering, you confirm that you accept our{' '}
-          <Text style={styles.link} onPress={onTermsOfUsePressed}>
+          <Text style={styles.link} onPress={handleTermsOfUsePressed}>
             Terms of Use
           </Text>{' '}
           and{' '}
-          <Text style={styles.link} onPress={onPrivacyPressed}>
+          <Text style={styles.link} onPress={handlePrivacyPressed}>
             Privacy Policy
           </Text>
         </Text>
 
+        <View style={styles.socialButtonContainer}>
+          <CustomButton
+            text="Sign up with Google"
+            onPress={handleGoogleButtonPress}
+            type="PRIMARY"
+          />
+          <CustomButton
+            text="Sign up with Facebook"
+            onPress={handleFacebookButtonPress}
+            type="PRIMARY"
+          />
+        </View>
+
         <CustomButton
           text="Have an account? Sign in"
-          onPress={onSignInPress}
+          onPress={handleSignInPress}
           type="TERTIARY"
         />
       </View>
