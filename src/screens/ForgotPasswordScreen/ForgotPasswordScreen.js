@@ -2,12 +2,10 @@ import React from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import CustomInput from '../../components/CustomInput/CustomInput';
 import CustomButton from '../../components/CustomButton/CustomButton';
-import {useNavigation} from '@react-navigation/native';
 import {useForm} from 'react-hook-form';
 
-const ForgotPasswordScreen = () => {
+const ForgotPasswordScreen = ({navigation}) => {
   const {control, handleSubmit} = useForm();
-  const navigation = useNavigation();
 
   const onSendPressed = data => {
     console.warn(data);
@@ -24,7 +22,7 @@ const ForgotPasswordScreen = () => {
         <Text style={styles.title}>Reset your password</Text>
 
         <CustomInput
-          name="username"
+          name="email"
           control={control}
           placeholder="Email"
           rules={{
@@ -35,7 +33,7 @@ const ForgotPasswordScreen = () => {
         <CustomButton text="Send" onPress={handleSubmit(onSendPressed)} />
 
         <CustomButton
-          text="Back to Sign in"
+          text="Back to Sign in screen"
           onPress={onSignInPress}
           type="TERTIARY"
         />

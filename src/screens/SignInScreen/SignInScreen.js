@@ -52,11 +52,24 @@ const SignInScreen = ({navigation}) => {
     }
   };
 
-  const onForgotPasswordPressed = () => {
+  // If user sign in before, they continue to access Home Screen
+
+  useEffect(() => {
+    const unsubscribe = auth().onAuthStateChanged(user => {
+      if (user) {
+        navigation.navigate('Home');
+      } else {
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleForgotPassword = () => {
     navigation.navigate('ForgotPassword');
   };
 
-  const onSignUpPress = () => {
+  const handleSignUpPress = () => {
     navigation.navigate('SignUp');
   };
 
@@ -71,15 +84,10 @@ const SignInScreen = ({navigation}) => {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={0}
-        style={styles.container}>
-        <View style={styles.root}>
-          <FastImage
-            source={Logo}
-            style={[styles.logo, {height: height * 0.3}]}
-            resizeMode="contain"
-          />
+        style={{height, width}}
+        behavior={Platform.OS === 'ios' ? 'padding' : null}>
+        <View style={styles.container}>
+          <Image source={Logo} style={styles.logo} resizeMode="contain" />
 
           <TextInput
             value={email}
@@ -98,13 +106,13 @@ const SignInScreen = ({navigation}) => {
           {error !== '' && <Text style={styles.errorText}>*{error}</Text>}
 
           <CustomButton
-            text="Sign In"
-            onPress={handleSubmit(onSignInPressed)}
+            text={isLoading ? 'Loading...' : 'Sign In'}
+            onPress={handleSubmit(handleSignInPressed)}
           />
 
           <CustomButton
             text="Forgot password?"
-            onPress={onForgotPasswordPressed}
+            onPress={handleForgotPassword}
             type="TERTIARY"
           />
 
@@ -123,7 +131,7 @@ const SignInScreen = ({navigation}) => {
 
           <CustomButton
             text="Don't have an account? Create one"
-            onPress={onSignUpPress}
+            onPress={handleSignUpPress}
             type="TERTIARY"
           />
         </View>
@@ -133,17 +141,35 @@ const SignInScreen = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  root: {
-    alignItems: 'center',
-    padding: 20,
+  container: {
+    flex: 1,
+    padding: 16,
   },
   logo: {
-    width: '70%',
-    height: '40%',
-    maxWidth: 300,
-    maxHeight: 200,
+    height: 150,
+    width: 150,
     marginBottom: 13,
-    marginLeft: 30,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  errorText: {
+    color: 'red',
+    marginVertical: 3,
+    marginRight: '30%',
+    width: '90%',
+  },
+  socialButtonContainer: {
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  input: {
+    backgroundColor: 'white',
+    width: '100%',
+    borderColor: '#e8e8e8',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginVertical: 5,
   },
   errorText: {
     color: 'red',

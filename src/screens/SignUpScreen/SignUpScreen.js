@@ -50,8 +50,9 @@ const SignUpScreen = ({navigation}) => {
     setError('onGoogleButtonPress');
   };
 
+
   const handleFacebookButtonPress = () => {
-    setError('onFacebookButtonPress');
+    console.warn('onFacebookButtonPress');
   };
 
   return (
@@ -77,15 +78,14 @@ const SignUpScreen = ({navigation}) => {
           placeholder="Password"
           secureTextEntry
           rules={{
-            required: 'Password is required',
-            minLength: {
-              value: 8,
-              message: 'Password should be at least 8 characters long',
-            },
+            required: '*Password is required',
           }}
         />
+
+        {error !== '' && <Text style={styles.errorText}>*{error}</Text>}
+
         <CustomInput
-          name="password-repeat"
+          name="repeatPassword"
           control={control}
           placeholder="Repeat Password"
           secureTextEntry
@@ -134,8 +134,8 @@ const SignUpScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   root: {
-    alignItems: 'center',
-    padding: 20,
+    flex: 1,
+    padding: 16,
   },
   title: {
     fontSize: 24,
@@ -148,7 +148,17 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   link: {
-    color: '#FDB075',
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  socialButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  errorText: {
+    color: 'red',
+    marginVertical: 4,
   },
 });
 

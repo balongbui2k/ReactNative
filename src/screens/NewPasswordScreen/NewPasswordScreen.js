@@ -47,7 +47,7 @@ const NewPasswordScreen = () => {
         <CustomButton text="Submit" onPress={handleSubmit(onSubmitPressed)} />
 
         <CustomButton
-          text="Back to Sign in"
+          text="Back to Sign in screen"
           onPress={onSignInPress}
           type="TERTIARY"
         />
