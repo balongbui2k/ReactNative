@@ -1,32 +1,43 @@
-import React from 'react';
-import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
-import NewPasswordScreen from '../screens/NewPasswordScreen';
-import HomeScreen from '../screens/HomeScreen';
-import RestaurantScreen from '../components/CustomRestaurants/RestaurantScreen';
-
+import React, {useState, useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import SignInScreen from './../screens/SignInScreen/SignInScreen';
-import SignUpScreen from './../screens/SignUpScreen/SignUpScreen';
-import FoodCart from './../components/CustomCart/FoodCart';
-import OrderScreen from '../screens/OrderScreen';
-import HomeTabs from './BottomTabs';
+import auth from '@react-native-firebase/auth';
+
+import AuthorizedStack from './AuthorizedStack';
+import UnAuthorizedStack from './UnAuthorizedStack';
 
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = auth().onAuthStateChanged(user => {
+      setUser(user);
+      if (initializing) {
+        setInitializing(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (initializing) {
+    return null;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="RestaurantScreen" component={RestaurantScreen} />
-        <Stack.Screen name="HomeTabs" component={HomeTabs} />
-        <Stack.Screen name="FoodCart" component={FoodCart} />
-        <Stack.Screen name="OrderScreen" component={OrderScreen} />
+        {user ? (
+          <Stack.Screen name="AuthorizedStack" component={AuthorizedStack} />
+        ) : (
+          <Stack.Screen
+            name="UnAuthorizedStack"
+            component={UnAuthorizedStack}
+          />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

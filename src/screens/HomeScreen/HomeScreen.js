@@ -19,7 +19,7 @@ import SortList from './SortList';
 import RESTAURANT_DATA from '../../../init_data/restaurants';
 import RestaurantDetails from './../../components/CustomRestaurants/RestaurantDetails';
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   const [activeCategory, setActiveCategory] = useState(null);
 
   const CategoryMenuItem = ({
@@ -62,9 +62,10 @@ const HomeScreen = () => {
               size={22}
               color="white"
               style={{position: 'absolute', right: 0}}
+              onPress={() => navigation.navigate('OrderHistory')}
             />
             <View style={styles.alertBadge}>
-              <Text style={styles.alertBadgeText}>12</Text>
+              <Text style={styles.alertBadgeText}></Text>
             </View>
           </View>
           <View style={styles.searchContainer}>
@@ -79,7 +80,7 @@ const HomeScreen = () => {
             <Feather
               name="sliders"
               size={20}
-              color="#ffc"
+              color="grey"
               style={{marginRight: 10}}
             />
           </View>
@@ -162,8 +163,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffc',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 16,
-    width: 16,
+    height: 13,
+    width: 13,
     position: 'absolute',
     right: -2,
     top: -10,
@@ -206,18 +207,15 @@ const styles = StyleSheet.create({
   categoryIcon: isActive => ({
     height: 31.5,
     width: 31.5,
-    opacity: isActive ? 1 : 0.5,
+    opacity: isActive ? 1 : 0.3,
   }),
   categoryText: isActive => ({
     fontSize: 11.5,
     lineHeight: 10 * 1.4,
     color: 'white',
     marginTop: 5,
-    opacity: isActive ? 1 : 0.5,
+    opacity: isActive ? 1 : 0.3,
   }),
-  listContainer: {
-    paddingVertical: 5,
-  },
   horizontalListContainer: {
     marginTop: 30,
     justifyContent: 'space-around',

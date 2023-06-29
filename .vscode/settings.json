@@ -1,18 +1,23 @@
 {
   "cSpell.words": [
+    "appspot",
     "chickenmaharajamac",
     "chickenmcnuggets",
     "Deliveryy",
+    "firebaseapp",
+    "firestore",
     "Haberno",
     "harbeno",
     "Ionicons",
     "khung",
+    "Lazyload",
     "mcchicken",
     "mcspicychicken",
     "persistor",
     "pizzamcpuff",
     "Pressable",
-    "reduxjs"
+    "reduxjs",
+    "Tgmk"
   ],
   "java.compile.nullAnalysis.mode": "automatic"
 }

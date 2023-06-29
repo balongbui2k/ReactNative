@@ -67,7 +67,6 @@ const RestaurantDetails = ({
                   <Text style={styles.deliveryDetailsText}>{time} min</Text>
                 </View>
                 <View style={styles.rowAndCenter}>
-                  <Image style={styles.deliveryDetailsIcon} />
                   <Text style={styles.deliveryDetailsText}>{distance}</Text>
                 </View>
               </View>

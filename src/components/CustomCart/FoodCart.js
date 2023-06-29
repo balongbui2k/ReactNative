@@ -7,7 +7,7 @@ import {
   FlatList,
   TouchableWithoutFeedback,
 } from 'react-native';
-import React, {useState} from 'react';
+import React from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import FOOD_DATA from './../../../init_data/foods';
 import {useNavigation} from '@react-navigation/native';
@@ -16,16 +16,18 @@ import {addToCart, removeFromCart} from './../../actions/CartAction';
 
 const FoodItem = ({item}) => {
   const dispatch = useDispatch();
-  const [itemCount, setItemCount] = useState(0);
+
+  const itemsInCart = useSelector(state => state?.cartStore?.carts);
+  const itemQuantity = itemsInCart[item?.id.toString()]?.quantity || 0;
+
+  // console.log('itemsInCart>>', JSON.stringify(itemsInCart, null, 2));
 
   const handleAddToCart = () => {
-    setItemCount(prevCount => prevCount + 1);
     dispatch(addToCart(item));
   };
 
   const handleRemoveFromCart = () => {
-    if (itemCount > 0) {
-      setItemCount(prevCount => prevCount - 1);
+    if (itemQuantity > 0) {
       dispatch(removeFromCart(item));
     }
   };
@@ -41,7 +43,7 @@ const FoodItem = ({item}) => {
         <View style={styles.footerContainer}>
           <Text style={styles.priceText}>${item.price}</Text>
           <View style={styles.itemAddContainer}>
-            {itemCount > 0 && (
+            {itemQuantity > 0 && (
               <>
                 <Feather
                   name="minus-square"
@@ -49,7 +51,7 @@ const FoodItem = ({item}) => {
                   color="orange"
                   onPress={handleRemoveFromCart}
                 />
-                <Text style={styles.itemCountText}>{itemCount}</Text>
+                <Text style={styles.itemCountText}>{itemQuantity}</Text>
               </>
             )}
             <Feather
@@ -65,9 +67,11 @@ const FoodItem = ({item}) => {
   );
 };
 
+const renderItem = ({item}) => <FoodItem item={item} />;
+
 export default function FoodCart() {
   const cartItems = useSelector(state => state.cartStore?.carts);
-  console.log('cartItems>>>', cartItems);
+  console.log('cartItems', JSON.stringify(cartItems, null, 2));
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;
@@ -77,18 +81,11 @@ export default function FoodCart() {
     return totalPrice;
   };
 
-  const renderItem = ({item}) => <FoodItem item={item} />;
   const navigation = useNavigation();
+
   const onCheckoutPressed = () => {
     navigation.navigate('OrderScreen');
   };
-
-  // let totalQuantity = 0;
-  // for (let i = 0; i < Object.keys(cartItems).length; i++) {
-  //   const item = cartItems[Object.keys(cartItems)[i]];
-  //   totalQuantity += item.quantity;
-  //   console.log('item>>>', item);
-  // }
 
   const totalQuantity = Object.values(cartItems).reduce(
     (total, item) => total + item.quantity,
@@ -104,6 +101,7 @@ export default function FoodCart() {
         contentContainerStyle={styles.listContainer}
       />
 
+      {/* Order Box */}
       {Object.keys(cartItems).length > 0 && (
         <TouchableWithoutFeedback>
           <View style={styles.checkoutContainer}>
@@ -131,7 +129,7 @@ export default function FoodCart() {
 }
 
 const styles = StyleSheet.create({
-  //Item Count text
+  //* Item Count text
   foodContainer: {
     flex: 1,
     flexDirection: 'row',

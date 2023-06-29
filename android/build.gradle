@@ -20,10 +20,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:7.3.1")
         classpath("com.facebook.react:react-native-gradle-plugin")
 
-<<<<<<< Updated upstream
         // Add the dependency for the Google services Gradle plugin
-=======
->>>>>>> Stashed changes
         classpath 'com.google.gms:google-services:4.3.15'
     }
 }

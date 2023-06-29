@@ -7,63 +7,49 @@ import {
   useWindowDimensions,
   Text,
   TextInput,
+  Image,
+  ActivityIndicator,
 } from 'react-native';
 
 import Logo from '../../assets/images/2khung.png';
-import CustomButton from '../../components/CustomButton';
 import {useForm} from 'react-hook-form';
-import FastImage from 'react-native-fast-image';
 import auth from '@react-native-firebase/auth';
+import {signInErrors} from './../../constants/Validate';
+import CustomButton from './../../components/CustomButton/CustomButton';
 
 const SignInScreen = ({navigation}) => {
   const {
-    control,
     handleSubmit,
     formState: {errors},
   } = useForm();
+
+  const {height} = useWindowDimensions();
+
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const {height} = useWindowDimensions();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onSignInPressed = async () => {
+  const handleSignInPressed = async () => {
     if (!email || !password) {
       setError('Email and password cannot be empty!');
+      setTimeout(() => {
+        setError('');
+      }, 2000);
       return;
     }
-
+    setIsLoading(true);
     try {
-      // Assuming `auth` is imported and available in the scope
       await auth().signInWithEmailAndPassword(email, password);
-      console.warn('User signed in!');
-      navigation.navigate('Home');
+      // console.log('User signed in!', JSON.stringify(response, null, 2));
     } catch (error) {
-      if (error.code === 'auth/invalid-email') {
-        setError('Invalid email address!');
-      } else if (error.code === 'auth/user-disabled') {
-        setError('Your account has been disabled!');
-      } else if (error.code === 'auth/user-not-found') {
-        setError('Email is not found');
-      } else if (error.code === 'auth/wrong-password') {
-        setError('Invalid email or password!');
-      } else {
-        console.error(error);
-      }
+      setError(signInErrors[error.code] || 'Unknown error occurred');
+      setTimeout(() => {
+        setError('');
+      }, 2000);
     }
+    setIsLoading(false);
   };
-
-  // If user sign in before, they continue to access Home Screen
-
-  useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged(user => {
-      if (user) {
-        navigation.navigate('Home');
-      } else {
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const handleForgotPassword = () => {
     navigation.navigate('ForgotPassword');
@@ -84,7 +70,7 @@ const SignInScreen = ({navigation}) => {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <KeyboardAvoidingView
-        style={{height, width}}
+        style={{height}}
         behavior={Platform.OS === 'ios' ? 'padding' : null}>
         <View style={styles.container}>
           <Image source={Logo} style={styles.logo} resizeMode="contain" />
@@ -94,6 +80,7 @@ const SignInScreen = ({navigation}) => {
             onChangeText={text => setEmail(text)}
             placeholder="Example@gmail.com"
             style={styles.input}
+            editable={!isLoading}
           />
           <TextInput
             value={password}
@@ -101,31 +88,45 @@ const SignInScreen = ({navigation}) => {
             placeholder="Password"
             secureTextEntry
             style={styles.input}
+            editable={!isLoading}
           />
 
-          {error !== '' && <Text style={styles.errorText}>*{error}</Text>}
+          {error !== '' && <Text style={styles.errorText}>{error}</Text>}
 
-          <CustomButton
-            text={isLoading ? 'Loading...' : 'Sign In'}
-            onPress={handleSubmit(handleSignInPressed)}
-          />
+          <View style={styles.signInContainer}>
+            <CustomButton
+              text={isLoading ? 'Loading...' : 'Sign In'}
+              onPress={handleSubmit(handleSignInPressed)}
+              disabled={isLoading}
+            />
+            {isLoading && (
+              <View style={styles.loadingOverlay}>
+                <ActivityIndicator size={30} color="white" />
+              </View>
+            )}
+          </View>
 
           <CustomButton
             text="Forgot password?"
             onPress={handleForgotPassword}
             type="TERTIARY"
+            disabled={!isLoading}
           />
 
-          <Text>Or you can sign in with</Text>
+          <Text style={{marginLeft: 90, paddingBottom: 8}}>
+            ----Or you can sign in with----
+          </Text>
 
-          <View style={styles.socialButtonContainer}>
+          <View>
             <CustomButton
               text="Sign up with Google"
               onPress={handleGoogleButtonPress}
+              type="PRIMARY"
             />
             <CustomButton
               text="Sign up with Facebook"
               onPress={handleFacebookButtonPress}
+              type="PRIMARY"
             />
           </View>
 
@@ -133,6 +134,7 @@ const SignInScreen = ({navigation}) => {
             text="Don't have an account? Create one"
             onPress={handleSignUpPress}
             type="TERTIARY"
+            disabled={isLoading}
           />
         </View>
       </KeyboardAvoidingView>
@@ -177,11 +179,11 @@ const styles = StyleSheet.create({
     marginRight: '30%',
     width: '70%',
   },
-  socialButtonContainer: {
-    width: 100,
-    height: 100,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
+  loadingOverlay: {
+    position: 'absolute',
+    marginLeft: '90%',
+    marginVertical: 16,
+    zIndex: 1,
   },
   input: {
     backgroundColor: 'white',

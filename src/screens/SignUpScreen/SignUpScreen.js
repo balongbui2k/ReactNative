@@ -4,11 +4,17 @@ import {useForm} from 'react-hook-form';
 import auth from '@react-native-firebase/auth';
 import CustomInput from './../../components/CustomInput/CustomInput';
 import CustomButton from './../../components/CustomButton/CustomButton';
+import {signUpErrors, signInErrors} from './../../constants/Validate';
 
 const EMAIL_REGEX = /@gmail\.com$/;
 
 const SignUpScreen = ({navigation}) => {
-  const {control, handleSubmit, watch} = useForm();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: {errors},
+  } = useForm();
   const [error, setError] = useState('');
 
   const pwd = watch('password');
@@ -24,32 +30,28 @@ const SignUpScreen = ({navigation}) => {
       console.warn('User account created & signed in!');
       navigation.navigate('SignIn');
     } catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
-        setError('That email address is already in use!');
-      } else if (error.code === 'auth/invalid-email') {
-        setError('That email address is invalid!');
-      } else {
-        console.error(error);
-      }
+      setError(signUpErrors[error.code]);
+
+      setTimeout(() => {
+        setError('');
+      }, 2000);
     }
   };
-
   const handleSignInPress = () => {
     navigation.navigate('SignIn');
   };
 
   const handleTermsOfUsePressed = () => {
-    setError('onTermsOfUsePressed');
+    console.warn('onTermsOfUsePressed');
   };
 
   const handlePrivacyPressed = () => {
-    setError('onPrivacyPressed');
+    console.warn('onPrivacyPressed');
   };
 
   const handleGoogleButtonPress = () => {
-    setError('onGoogleButtonPress');
+    console.warn('onGoogleButtonPress');
   };
-
 
   const handleFacebookButtonPress = () => {
     console.warn('onFacebookButtonPress');
@@ -72,17 +74,22 @@ const SignUpScreen = ({navigation}) => {
             },
           }}
         />
+
+        {error !== '' && <Text style={styles.errorText}>{error}</Text>}
+
         <CustomInput
           name="password"
           control={control}
           placeholder="Password"
           secureTextEntry
           rules={{
-            required: '*Password is required',
+            required: 'Password is required',
+            minLength: {
+              value: 6,
+              message: 'Password should be at least 6 characters long',
+            },
           }}
         />
-
-        {error !== '' && <Text style={styles.errorText}>*{error}</Text>}
 
         <CustomInput
           name="repeatPassword"
@@ -125,8 +132,6 @@ const SignUpScreen = ({navigation}) => {
           onPress={handleSignInPress}
           type="TERTIARY"
         />
-
-        {error !== '' && <Text style={styles.errorText}>{error}</Text>}
       </View>
     </ScrollView>
   );
@@ -152,7 +157,6 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   socialButtonContainer: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
     marginVertical: 10,
   },
