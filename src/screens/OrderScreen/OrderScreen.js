@@ -7,18 +7,85 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
-import {addToCart, removeFromCart} from './../../actions/CartAction';
+import {addToCart, removeFromCart, resetCart} from './../../actions/CartAction';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import Images from '../../constants/Images';
 
 const OrderScreen = ({navigation}) => {
   const cartItems = useSelector(state => state.cartStore?.carts);
+  const dispatch = useDispatch();
+  const [purchasedItems, setPurchasedItems] = useState([]);
 
-  console.log('cartItems>>>', cartItems);
+  const cartCollectionRef = firestore().collection('Cart');
 
-  //* How to calculate the grandTotal
+  const currentUser = auth().currentUser;
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const removeAllPurchasedItems = () => {
+    setPurchasedItems([]);
+  };
+
+  useEffect(() => {
+    const items = Object.values(cartItems);
+    setPurchasedItems(items);
+  }, [cartItems]);
+
+  const onOrderPressed = async () => {
+    const orderData = {
+      items: purchasedItems.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        image: item.image,
+      })),
+      totalPrice: calculateTotalPrice(),
+      discount: calculateDiscount(),
+      grandTotal: calculateGrandTotal(),
+      userEmail: currentUser.email,
+      createdAt: new Date(),
+    };
+    try {
+      setIsLoading(true);
+      await saveOrderToFirestore(orderData);
+      removeAllPurchasedItems();
+      // Delete cartItems
+      dispatch(resetCart());
+      navigation.navigate('Home');
+    } catch (error) {
+      console.error('Error saving order:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const saveOrderToFirestore = async orderData => {
+    const orderCollectionRef = firestore().collection('Cart');
+    return await orderCollectionRef.add(orderData);
+  };
+
+  const updateCartItem = (item, newQuantity) => {
+    const cartDocRef = cartCollectionRef.doc(item.id.toString());
+
+    return cartDocRef
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          return cartDocRef.update({quantity: newQuantity});
+        } else {
+          return cartDocRef.set({...item, quantity: newQuantity});
+        }
+      })
+      .then(() => {})
+      .catch(error => {
+        console.error('Error updating cart item:', error);
+      });
+  };
 
   const calculateTotalPrice = () => {
     const totalPrice = Object.values(cartItems).reduce(
@@ -37,20 +104,14 @@ const OrderScreen = ({navigation}) => {
     return calculateTotalPrice() - discountPrice;
   };
 
-  const purchasedItems = Object.values(cartItems);
-
-  const onOrderPressed = () => {
-    console.warn('Order thanh cong');
-  };
-
-  //! Dirty code
+  //* Food Items
   const FoodItem = ({item}) => {
-    const dispatch = useDispatch();
     const [itemCount, setItemCount] = useState(item.quantity);
 
     const handleAddToCart = () => {
       setItemCount(prevCount => prevCount + 1);
       dispatch(addToCart(item));
+      updateCartItem(item, item.quantity + 1);
     };
 
     const handleRemoveFromCart = () => {
@@ -113,11 +174,29 @@ const OrderScreen = ({navigation}) => {
         />
         <Text style={styles.headerTitle}>My Cart</Text>
       </View>
-      <FlatList //* Render list's bought
-        data={purchasedItems}
-        renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
-      />
+      {purchasedItems.length > 0 ? (
+        <FlatList
+          data={purchasedItems}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          editable={!isLoading}
+        />
+      ) : (
+        <View style={styles.emptyCartContainer}>
+          <Image source={Images.EMPTY_CART} style={styles.emptyCartImage} />
+          <Text style={styles.emptyCartTitle}>Empty Cart</Text>
+          <Text style={styles.emptyCartText}>
+            Go ahead, order some foods from the menu
+          </Text>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => {
+              navigation.navigate('Home');
+            }}>
+            <Text style={{color: 'white', fontWeight: '500'}}>+ Add Items</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       <View style={styles.promoCodeContainer}>
         <View style={styles.rowAndCenter}>
           <Feather
@@ -163,9 +242,18 @@ const OrderScreen = ({navigation}) => {
           $ {calculateGrandTotal()?.toFixed(2)}
         </Text>
       </View>
-      <TouchableOpacity style={styles.orderButton} onPress={onOrderPressed}>
+      <TouchableOpacity
+        style={[
+          styles.orderButton,
+          purchasedItems.length === 0 && styles.disabledOrderButton,
+        ]}
+        disabled={isLoading || purchasedItems.length === 0}
+        onPress={onOrderPressed}>
         <View style={styles.rowAndCenter}>
-          <Text style={styles.orderText}>Order</Text>
+          <Text
+            style={[styles.orderText, isLoading && styles.loadingOrderText]}>
+            {isLoading ? 'Loading...' : 'Order'}
+          </Text>
         </View>
         <Text style={styles.orderTotalText}>
           $ {calculateGrandTotal()?.toFixed(2)}
@@ -174,6 +262,7 @@ const OrderScreen = ({navigation}) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -250,13 +339,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 8,
   },
-
   itemCountText: {
     color: 'black',
     fontSize: 16,
     lineHeight: 15 * 1.4,
     paddingHorizontal: 6,
     borderRadius: 3,
+  },
+  //* Empty Cart screen
+  emptyCartContainer: {
+    flex: 1,
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  emptyCartImage: {
+    width: 100,
+    height: 100,
+  },
+  emptyCartTitle: {
+    color: '#199',
+    fontWeight: '500',
+    fontSize: 20,
+    marginTop: 16,
+  },
+  emptyCartText: {
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  addButton: {
+    width: 90,
+    height: 32,
+    backgroundColor: '#fb4',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+    borderRadius: 4,
   },
   promoCodeContainer: {
     flexDirection: 'row',
@@ -329,6 +446,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 14,
     marginBottom: 16,
+  },
+  disabledOrderButton: {
+    backgroundColor: 'grey',
+    opacity: 0.7,
   },
   orderText: {
     fontSize: 20,
