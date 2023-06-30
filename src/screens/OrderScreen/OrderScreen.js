@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  ToastAndroid,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
@@ -21,7 +22,7 @@ const OrderScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const [purchasedItems, setPurchasedItems] = useState([]);
 
-  const cartCollectionRef = firestore().collection('Cart');
+  const cartCollectionRef = firestore().collection('Order');
 
   const currentUser = auth().currentUser;
 
@@ -50,13 +51,20 @@ const OrderScreen = ({navigation}) => {
       userEmail: currentUser.email,
       createdAt: new Date(),
     };
+    console.log('orderData>>', JSON.stringify(orderData, null, 2));
+
     try {
       setIsLoading(true);
       await saveOrderToFirestore(orderData);
       removeAllPurchasedItems();
       // Delete cartItems
       dispatch(resetCart());
-      navigation.navigate('Home');
+      navigation.navigate('OrderSuccess');
+      ToastAndroid.show(
+        'OrderSuccessfully',
+        ToastAndroid.BOTTOM,
+        ToastAndroid.LONG,
+      );
     } catch (error) {
       console.error('Error saving order:', error);
     } finally {
@@ -65,7 +73,7 @@ const OrderScreen = ({navigation}) => {
   };
 
   const saveOrderToFirestore = async orderData => {
-    const orderCollectionRef = firestore().collection('Cart');
+    const orderCollectionRef = firestore().collection('Order');
     return await orderCollectionRef.add(orderData);
   };
 
@@ -123,7 +131,7 @@ const OrderScreen = ({navigation}) => {
 
     return (
       <View style={styles.foodContainer}>
-        <Image style={styles.image} source={item.image} />
+        <Image style={styles.image} source={{uri: item.image}} />
         <View style={styles.detailContainer}>
           <View>
             <Text style={styles.titleText}>{item.name}</Text>
@@ -166,13 +174,13 @@ const OrderScreen = ({navigation}) => {
         translucent
       />
       <View style={styles.headerContainer}>
-        <Ionicons
-          name="chevron-back-outline"
-          size={30}
-          onPress={() => navigation.goBack()}
-          style={{marginTop: 16}}
-        />
-        <Text style={styles.headerTitle}>My Cart</Text>
+        <TouchableOpacity
+          style={styles.backButton}
+          hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
+          onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back-outline" size={30} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>My Order</Text>
       </View>
       {purchasedItems.length > 0 ? (
         <FlatList
@@ -184,7 +192,7 @@ const OrderScreen = ({navigation}) => {
       ) : (
         <View style={styles.emptyCartContainer}>
           <Image source={Images.EMPTY_CART} style={styles.emptyCartImage} />
-          <Text style={styles.emptyCartTitle}>Empty Cart</Text>
+          <Text style={styles.emptyCartTitle}>Empty Order</Text>
           <Text style={styles.emptyCartText}>
             Go ahead, order some foods from the menu
           </Text>
@@ -274,13 +282,16 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 23,
   },
+  backButton: {
+    marginTop: 16,
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
     lineHeight: 20 * 1.4,
-    width: 80,
+    width: 90,
     textAlign: 'center',
-    marginLeft: 110,
+    marginLeft: 100,
     marginTop: 16,
   },
   foodList: {
@@ -346,7 +357,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     borderRadius: 3,
   },
-  //* Empty Cart screen
+  //* Empty Order screen
   emptyCartContainer: {
     flex: 1,
     alignItems: 'center',
