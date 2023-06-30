@@ -5,6 +5,7 @@ import RestaurantScreen from './../components/CustomRestaurants/RestaurantScreen
 import OrderScreen from './../screens/OrderScreen/OrderScreen';
 import OrderHistoryScreen from './../screens/OrderHistoryScreen/OrderHistory';
 import HomeTabs from './BottomTabs';
+import OrderSuccessScreen from './../screens/OrderScreen/OrderSuccessScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +17,7 @@ const AuthorizedStack = () => {
       <Stack.Screen name="OrderScreen" component={OrderScreen} />
       <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
       <Stack.Screen name="HomeTabs" component={HomeTabs} />
+      <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
     </Stack.Navigator>
   );
 };
