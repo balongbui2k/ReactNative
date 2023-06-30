@@ -9,9 +9,7 @@ const Stack = createNativeStackNavigator();
 
 export default function UnAuthorizedStack() {
   return (
-    <Stack.Navigator
-      screenOptions={{headerShown: false}}
-      initialRouteName="SignIn">
+    <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />

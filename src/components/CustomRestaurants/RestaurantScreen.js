@@ -49,19 +49,15 @@ const ListFooter = () => (
   </View>
 );
 
-const RestaurantScreen = ({navigation}) => {
+const RestaurantScreen = ({navigation: {goBack}}) => {
   const [selectedCategory, setSelectedCategory] = useState();
 
   const restaurantId = RESTAURANT_DATA.find(item => item.id === '100');
 
-  const handleGoBack = () => {
-    navigation.goBack();
-  };
-
   return (
     <View style={styles.container}>
       <StatusBar barStyle="default" translucent backgroundColor="transparent" />
-      <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
+      <TouchableOpacity style={styles.backButton} onPress={() => goBack()}>
         <Ionicons name="chevron-back-outline" size={30} color="white" />
       </TouchableOpacity>
       <Image

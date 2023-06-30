@@ -110,7 +110,7 @@ const SignInScreen = ({navigation}) => {
             text="Forgot password?"
             onPress={handleForgotPassword}
             type="TERTIARY"
-            disabled={!isLoading}
+            disabled={isLoading}
           />
 
           <Text style={{marginLeft: 90, paddingBottom: 8}}>
