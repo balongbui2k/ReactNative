@@ -6,6 +6,7 @@ import {
   Text,
   FlatList,
   Image,
+  TouchableWithoutFeedback,
   TouchableOpacity,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -57,7 +58,10 @@ const RestaurantScreen = ({navigation: {goBack}}) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="default" translucent backgroundColor="transparent" />
-      <TouchableOpacity style={styles.backButton} onPress={() => goBack()}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => goBack()}
+        hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}>
         <Ionicons name="chevron-back-outline" size={30} color="white" />
       </TouchableOpacity>
       <Image
