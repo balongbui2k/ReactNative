@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
-import FastImage from 'react-native-fast-image';
 import FOOD_DATA from './../../../init_data/foods';
 import auth from '@react-native-firebase/auth';
 import {FlatList} from 'react-native-bidirectional-infinite-scroll';
@@ -21,7 +20,7 @@ const OrderHistoryScreen = ({navigation}) => {
   const fetchOrderHistory = async () => {
     try {
       const querySnapshot = await firestore()
-        .collection('Cart')
+        .collection('Order')
         .where('userEmail', '==', currentUser.email)
         .orderBy('createdAt', 'desc')
         .limit(3)
@@ -57,7 +56,7 @@ const OrderHistoryScreen = ({navigation}) => {
     try {
       const lastItem = orderHistory[orderHistory.length - 1];
       const querySnapshot = await firestore()
-        .collection('Cart')
+        .collection('Order')
         .where('userEmail', '==', currentUser.email)
         .orderBy('createdAt', 'desc')
         .startAfter(lastItem.createdAt)
@@ -92,11 +91,11 @@ const OrderHistoryScreen = ({navigation}) => {
         <Text style={styles.userInfoText}>User: {item.userEmail}</Text>
         <Text>Date: {item.createdAt?.toDate().toString()}</Text>
       </View>
-      {console.log('item>>>', JSON.stringify(item, null, 2))}
+      {/* {console.log('item>>>', JSON.stringify(item, null, 2))} */}
       {item.items?.map((item, itemIndex) => (
         <View key={itemIndex} style={styles.itemContainer}>
-          <FastImage
-            source={{uri: getFoodImage(item)}}
+          <Image
+            source={{uri: item.image}}
             style={styles.itemImage}
             resizeMode="contain"
           />
@@ -118,12 +117,12 @@ const OrderHistoryScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Ionicons
-          name="chevron-back-outline"
-          size={30}
-          onPress={() => navigation.goBack()}
+        <TouchableOpacity
           style={styles.backButton}
-        />
+          hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
+          onPress={() => navigation.navigate('Home')}>
+          <Ionicons name="home-outline" size={25} />
+        </TouchableOpacity>
         <Text style={styles.title}>Order History</Text>
       </View>
       {orderHistory.length > 0 ? (
@@ -192,7 +191,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 23,
     color: '#fb4',
-    marginLeft: 170,
+    marginLeft: 'auto',
   },
   itemContainer: {
     flexDirection: 'row',
