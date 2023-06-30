@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import {View, Text, ScrollView, StyleSheet, ToastAndroid} from 'react-native';
 import {useForm} from 'react-hook-form';
 import auth from '@react-native-firebase/auth';
 import CustomInput from './../../components/CustomInput/CustomInput';
@@ -27,7 +27,7 @@ const SignUpScreen = ({navigation}) => {
 
     try {
       await auth().createUserWithEmailAndPassword(email, password);
-      console.warn('User account created & signed in!');
+      ToastAndroid.showWithGravity(ToastAndroid.SHORT, ToastAndroid.CENTER);
       navigation.navigate('SignIn');
     } catch (error) {
       setError(signUpErrors[error.code]);
