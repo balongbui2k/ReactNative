@@ -9,6 +9,7 @@ import {
   TextInput,
   Image,
   ActivityIndicator,
+  ToastAndroid,
 } from 'react-native';
 
 import Logo from '../../assets/images/2khung.png';
@@ -41,7 +42,11 @@ const SignInScreen = ({navigation}) => {
     setIsLoading(true);
     try {
       await auth().signInWithEmailAndPassword(email, password);
-      // console.log('User signed in!', JSON.stringify(response, null, 2));
+      ToastAndroid.show(
+        'User created and ready to sign in',
+        ToastAndroid.CENTER,
+        ToastAndroid.LONG,
+      );
     } catch (error) {
       setError(signInErrors[error.code] || 'Unknown error occurred');
       setTimeout(() => {
