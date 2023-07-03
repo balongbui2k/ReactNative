@@ -1,10 +1,17 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView, StyleSheet, ToastAndroid} from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  ToastAndroid,
+  ActivityIndicator,
+} from 'react-native';
 import {useForm} from 'react-hook-form';
 import auth from '@react-native-firebase/auth';
 import CustomInput from './../../components/CustomInput/CustomInput';
 import CustomButton from './../../components/CustomButton/CustomButton';
-import {signUpErrors, signInErrors} from './../../constants/Validate';
+import {signUpErrors} from './../../constants/Validate';
 
 const EMAIL_REGEX = /@gmail\.com$/;
 
@@ -16,6 +23,7 @@ const SignUpScreen = ({navigation}) => {
     formState: {errors},
   } = useForm();
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const pwd = watch('password');
 
@@ -24,10 +32,14 @@ const SignUpScreen = ({navigation}) => {
       setError('Email and password cannot be empty!');
       return;
     }
-
+    setIsLoading(true);
     try {
       await auth().createUserWithEmailAndPassword(email, password);
-      ToastAndroid.showWithGravity(ToastAndroid.SHORT, ToastAndroid.CENTER);
+      ToastAndroid.show(
+        'User created and ready to sign in',
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER,
+      );
       navigation.navigate('SignIn');
     } catch (error) {
       setError(signUpErrors[error.code]);
@@ -36,6 +48,7 @@ const SignUpScreen = ({navigation}) => {
         setError('');
       }, 2000);
     }
+    setIsLoading(false);
   };
   const handleSignInPress = () => {
     navigation.navigate('SignIn');
@@ -101,7 +114,18 @@ const SignUpScreen = ({navigation}) => {
           }}
         />
 
-        <CustomButton text="Register" onPress={handleSubmit(handleRegister)} />
+        <View>
+          <CustomButton
+            text={isLoading ? 'Loading...' : 'Register'}
+            onPress={handleSubmit(handleRegister)}
+            disable={isLoading}
+          />
+          {isLoading && (
+            <View style={styles.registerLoading}>
+              <ActivityIndicator color="white" size={30} />
+            </View>
+          )}
+        </View>
 
         <Text style={styles.text}>
           By registering, you confirm that you accept our{' '}
@@ -151,6 +175,12 @@ const styles = StyleSheet.create({
   text: {
     color: 'gray',
     marginVertical: 10,
+  },
+  registerLoading: {
+    position: 'absolute',
+    marginLeft: '90%',
+    marginVertical: 16,
+    zIndex: 1,
   },
   link: {
     color: 'blue',
