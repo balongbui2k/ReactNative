@@ -42,11 +42,7 @@ const SignInScreen = ({navigation}) => {
     setIsLoading(true);
     try {
       await auth().signInWithEmailAndPassword(email, password);
-      ToastAndroid.show(
-        'User created and ready to sign in',
-        ToastAndroid.CENTER,
-        ToastAndroid.LONG,
-      );
+      ToastAndroid.show('Welcome Home', ToastAndroid.CENTER, ToastAndroid.LONG);
     } catch (error) {
       setError(signInErrors[error.code] || 'Unknown error occurred');
       setTimeout(() => {
@@ -98,7 +94,7 @@ const SignInScreen = ({navigation}) => {
 
           {error !== '' && <Text style={styles.errorText}>{error}</Text>}
 
-          <View style={styles.signInContainer}>
+          <View>
             <CustomButton
               text={isLoading ? 'Loading...' : 'Sign In'}
               onPress={handleSubmit(handleSignInPressed)}
