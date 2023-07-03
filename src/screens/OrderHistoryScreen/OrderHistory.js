@@ -41,11 +41,6 @@ const OrderHistoryScreen = ({navigation}) => {
     }
   };
 
-  const getFoodImage = itemId => {
-    const foodItem = FOOD_DATA.find(item => item.id === itemId);
-    return foodItem?.image || null;
-  };
-
   const loadMoreOrderHistory = async () => {
     if (isLoadingMore) {
       return;
@@ -79,8 +74,7 @@ const OrderHistoryScreen = ({navigation}) => {
 
     setIsLoadingMore(false);
   };
-  {
-  }
+
   const renderOrderItem = ({item}) => (
     <View style={styles.orderContainer}>
       <View style={styles.orderDetailsContainer}>
@@ -105,7 +99,6 @@ const OrderHistoryScreen = ({navigation}) => {
             <Text>Discount: ${item.discount}</Text>
             <Text>Total Price: ${item.totalPrice}</Text>
           </View>
-          {console.log('Discount>>>', item.discount)}
         </View>
       ))}
       <TouchableOpacity>
