@@ -7,8 +7,6 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
-  TextInput,
-  Pressable,
 } from 'react-native';
 import Separator from '../../components/CustomHomeMenu/Separator';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -20,6 +18,7 @@ import SortList from './SortList';
 import RESTAURANT_DATA from '../../../init_data/restaurants';
 import RestaurantDetails from './../../components/CustomRestaurants/RestaurantDetails';
 import styles from './styles';
+import SearchBar from './SearchBar';
 
 const HomeScreen = ({navigation}) => {
   const [activeCategory, setActiveCategory] = useState(null);
@@ -28,7 +27,7 @@ const HomeScreen = ({navigation}) => {
 
   const handleSearchTextChange = text => {
     setSearchText(text);
-    console.log('text', text);
+    // console.log('text', text);
   };
 
   const CategoryMenuItem = ({
@@ -87,22 +86,10 @@ const HomeScreen = ({navigation}) => {
           </View>
 
           {/* Search Bar */}
-          <View style={styles.searchContainer}>
-            <View style={styles.searchSection}>
-              <Ionicons name="search-outline" size={25} color="grey" />
-              <TextInput
-                style={styles.searchText}
-                placeholder="Search..."
-                value={searchText}
-                onChangeText={handleSearchTextChange}
-              />
-            </View>
-            <View style={styles.cancelContainer}>
-              <Pressable>
-                <Text style={styles.cancelText}>Cancel</Text>
-              </Pressable>
-            </View>
-          </View>
+          <SearchBar
+            searchText={searchText}
+            handleSearchTextChange={handleSearchTextChange} //* Nhớ truyền props
+          />
           <View style={styles.categoriesContainer}>
             {CATEGORIES?.map(({name, logo}) => (
               <CategoryMenuItem
@@ -115,7 +102,7 @@ const HomeScreen = ({navigation}) => {
             ))}
           </View>
         </View>
-        <View style={{...styles.listContainer, flex: 1, height: '100%'}}>
+        <View style={{flex: 1, height: '100%'}}>
           <View style={styles.horizontalListContainer}>
             <View style={styles.listHeader}>
               <Text style={styles.listHeaderTitle}>Top Rated</Text>
