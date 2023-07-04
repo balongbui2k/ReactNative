@@ -37,8 +37,8 @@ const SignUpScreen = ({navigation}) => {
       await auth().createUserWithEmailAndPassword(email, password);
       ToastAndroid.show(
         'User created and ready to sign in',
-        ToastAndroid.SHORT,
         ToastAndroid.CENTER,
+        ToastAndroid.LONG,
       );
       navigation.navigate('SignIn');
     } catch (error) {
@@ -50,22 +50,16 @@ const SignUpScreen = ({navigation}) => {
     }
     setIsLoading(false);
   };
-  const handleSignInPress = () => {
-    navigation.navigate('SignIn');
-  };
 
   const handleTermsOfUsePressed = () => {
     console.warn('onTermsOfUsePressed');
   };
-
   const handlePrivacyPressed = () => {
     console.warn('onPrivacyPressed');
   };
-
   const handleGoogleButtonPress = () => {
     console.warn('onGoogleButtonPress');
   };
-
   const handleFacebookButtonPress = () => {
     console.warn('onFacebookButtonPress');
   };
@@ -153,7 +147,7 @@ const SignUpScreen = ({navigation}) => {
 
         <CustomButton
           text="Have an account? Sign in"
-          onPress={handleSignInPress}
+          onPress={() => navigation.navigate('SignIn')}
           type="TERTIARY"
         />
       </View>

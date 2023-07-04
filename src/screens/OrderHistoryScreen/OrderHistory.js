@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
-import FOOD_DATA from './../../../init_data/foods';
 import auth from '@react-native-firebase/auth';
 import {FlatList} from 'react-native-bidirectional-infinite-scroll';
 

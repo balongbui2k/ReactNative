@@ -26,7 +26,7 @@ const OrderScreen = ({navigation}) => {
   const cartCollectionRef = firestore().collection('Order');
 
   const currentUser = auth().currentUser;
-
+  // console.log('currentUser', JSON.stringify(currentUser, null, 2));
   const [isLoading, setIsLoading] = useState(false);
 
   const removeAllPurchasedItems = () => {
