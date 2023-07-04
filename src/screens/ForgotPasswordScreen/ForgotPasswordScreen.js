@@ -7,15 +7,6 @@ import {useForm} from 'react-hook-form';
 const ForgotPasswordScreen = ({navigation}) => {
   const {control, handleSubmit} = useForm();
 
-  const onSendPressed = data => {
-    console.warn(data);
-    navigation.navigate('NewPassword');
-  };
-
-  const onSignInPress = () => {
-    navigation.navigate('SignIn');
-  };
-
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.root}>
@@ -30,11 +21,14 @@ const ForgotPasswordScreen = ({navigation}) => {
           }}
         />
 
-        <CustomButton text="Send" onPress={handleSubmit(onSendPressed)} />
+        <CustomButton
+          text="Send"
+          onPress={handleSubmit(() => navigation.navigate('NewPassword'))}
+        />
 
         <CustomButton
           text="Back to Sign in screen"
-          onPress={onSignInPress}
+          onPress={() => navigation.navigate('SignIn')}
           type="TERTIARY"
         />
       </View>
