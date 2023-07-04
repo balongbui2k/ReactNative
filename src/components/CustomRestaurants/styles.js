@@ -19,8 +19,8 @@ const styles = StyleSheet.create({
   },
   searchSection: {
     flexDirection: 'row',
-    marginTop: 40,
-    marginLeft: 8,
+    marginTop: 35,
+    marginLeft: '90%',
   },
   searchText: {
     color: 'grey',
