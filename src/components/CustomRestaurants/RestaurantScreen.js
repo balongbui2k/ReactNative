@@ -1,22 +1,23 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
-  StyleSheet,
   StatusBar,
   View,
   Text,
   FlatList,
   Image,
-  TouchableWithoutFeedback,
   TouchableOpacity,
+  TextInput,
+  ScrollView,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Separator from './../CustomHomeMenu/Separator';
 import RESTAURANT_DATA from './../../../init_data/restaurants';
 import Images from '../../constants/Images';
 import CategoryListItem from './../CustomHomeMenu/CategoryListItem';
-import FoodCart from './../CustomCart/FoodCart';
+import styles from '../CustomRestaurants/styles';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import FOOD_DATA from './../../../init_data/foods';
+import {FoodItem} from '../../components/CustomCart/FoodCart';
 const ListHeader = () => (
   <View
     style={{
@@ -53,8 +54,24 @@ const ListFooter = () => (
 const RestaurantScreen = ({navigation: {goBack}}) => {
   const [selectedCategory, setSelectedCategory] = useState();
 
+  const [searchText, setSearchText] = useState('');
+  const [filteredFoods, setFilteredFoods] = useState([]);
+
+  const handleSearchTextChange = text => {
+    setSearchText(text);
+    console.log('text', text);
+  };
+
+  useEffect(() => {
+    const filtered = FOOD_DATA.filter(food =>
+      food.name.toLowerCase().includes(searchText.toLowerCase()),
+    );
+    setFilteredFoods(filtered);
+  }, [searchText]);
+
   const restaurantId = RESTAURANT_DATA.find(item => item.id === '100');
 
+  console.log('filteredFoods', filteredFoods);
   return (
     <View style={styles.container}>
       <StatusBar barStyle="default" translucent backgroundColor="transparent" />
@@ -64,11 +81,24 @@ const RestaurantScreen = ({navigation: {goBack}}) => {
         hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}>
         <Ionicons name="chevron-back-outline" size={30} color="white" />
       </TouchableOpacity>
+      {/* Search Bar */}
+      <View style={{flexDirection: 'row', zIndex: 9}}>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchText}
+            placeholder="Search..."
+            value={searchText}
+            onChangeText={handleSearchTextChange}
+          />
+        </View>
+        <View style={styles.searchSection}>
+          <Ionicons name="search-outline" size={25} color="white" />
+        </View>
+      </View>
       <Image
         source={require('../../assets/staticImages/gallery/square/hd/burgers.png')}
         style={styles.backgroundImage}
       />
-
       <Separator height={35} />
       <View style={{backgroundColor: 'transparent', flex: 1}}>
         <View style={styles.mainContainer}>
@@ -127,121 +157,15 @@ const RestaurantScreen = ({navigation: {goBack}}) => {
               )}
             />
           </View>
-          <FoodCart key={restaurantId?.id} {...restaurantId} />
+          <ScrollView style={{height: 1000}}>
+            {filteredFoods.map(item => (
+              <FoodItem item={item} />
+            ))}
+          </ScrollView>
         </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'gray',
-  },
-  backgroundImage: {
-    position: 'absolute',
-    width: 400,
-    height: 370,
-  },
-  mainContainer: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    height: '75%',
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginHorizontal: 25,
-    marginTop: 15,
-  },
-  title: {
-    fontSize: 23,
-    lineHeight: 23 * 1.4,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  tagText: {
-    marginHorizontal: 25,
-    marginTop: 5,
-    fontSize: 13,
-    lineHeight: 13 * 1.4,
-    fontWeight: 'bold',
-    color: 'grey',
-  },
-  ratingReviewsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 25,
-    marginTop: 10,
-  },
-  ratingText: {
-    marginLeft: 5,
-    fontSize: 13,
-    lineHeight: 13 * 1.4,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  reviewsText: {
-    marginLeft: 5,
-    fontSize: 13,
-    lineHeight: 13 * 1.4,
-    fontWeight: 'medium',
-    color: 'black',
-  },
-  deliveryDetailsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 25,
-    marginTop: 10,
-    justifyContent: 'space-between',
-  },
-  deliveryDetailText: {
-    marginLeft: 3,
-    fontSize: 12,
-    lineHeight: 12 * 1.4,
-    fontWeight: 'medium',
-    color: 'black',
-  },
-  deliveryDetailIcon: {
-    height: 16,
-    width: 16,
-  },
-  rowAndCenter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  restaurantType: {
-    backgroundColor: '#ffe9c2',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 8,
-  },
-  restaurantTypeText: {
-    fontSize: 12,
-    lineHeight: 12 * 1.4,
-    fontWeight: '600',
-    color: 'orange',
-  },
-  categoriesContainer: {
-    marginTop: 5,
-    borderRadius: 2,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 30,
-    left: 20,
-    zIndex: 9,
-    padding: 5,
-    borderRadius: 20,
-  },
-});
 
 export default RestaurantScreen;
