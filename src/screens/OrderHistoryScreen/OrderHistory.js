@@ -30,9 +30,11 @@ const OrderHistoryScreen = ({navigation}) => {
         const items = data.items.map(item => ({
           ...item,
           totalPrice: item.quantity * item.price,
+          discount: data.discount,
         }));
         return {...data, items};
       });
+      console.log('history', JSON.stringify(history, null, 2));
 
       setOrderHistory(history);
     } catch (error) {
@@ -74,35 +76,45 @@ const OrderHistoryScreen = ({navigation}) => {
     setIsLoadingMore(false);
   };
 
-  const renderOrderItem = ({item}) => (
-    <View style={styles.orderContainer}>
-      <View style={styles.orderDetailsContainer}>
-        <Text style={styles.orderDetailsText}>Order Details:</Text>
-        <Text style={styles.grandTotalText}>${item.grandTotal}</Text>
-      </View>
-      <View style={styles.userInfoContainer}>
-        <Text style={styles.userInfoText}>User: {item.userEmail}</Text>
-        <Text>Date: {item.createdAt?.toDate().toString()}</Text>
-      </View>
-      {/* {console.log('item>>>', JSON.stringify(item, null, 2))} */}
-      {item.items?.map((item, itemIndex) => (
-        <View key={itemIndex} style={styles.itemContainer}>
-          <Image
-            source={{uri: item.image}}
-            style={styles.itemImage}
-            resizeMode="contain"
-          />
-          <View style={{flex: 1}}>
-            <Text>{item.name}</Text>
-            <Text>Quantity: {item.quantity}</Text>
-            <Text>Discount: ${item.discount}</Text>
-            <Text>Total Price: ${item.totalPrice}</Text>
-          </View>
+  const renderOrderItem = ({item}) => {
+    const renderItems = item.items.map((item, itemIndex) => (
+      <View key={itemIndex} style={styles.itemContainer}>
+        <Image
+          source={{uri: item.image}}
+          style={styles.itemImage}
+          resizeMode="contain"
+        />
+        <View style={{flex: 1}}>
+          <Text>{item.name}</Text>
+          <Text>Quantity: {item.quantity}</Text>
+          <Text>Discount: ${item.discount}</Text>
+          <Text>Total Price: ${item.totalPrice}</Text>
         </View>
-      ))}
-      <TouchableOpacity>
-        <Text style={styles.reOrderButton}>Reorder</Text>
-      </TouchableOpacity>
+        {console.log('item>>>', JSON.stringify(item, null, 2))}
+      </View>
+    ));
+
+    return (
+      <View style={styles.orderContainer}>
+        <View style={styles.orderDetailsContainer}>
+          <Text style={styles.orderDetailsText}>Order Details:</Text>
+          <Text style={styles.grandTotalText}>${item.grandTotal}</Text>
+        </View>
+        <View style={styles.userInfoContainer}>
+          <Text style={styles.userInfoText}>User: {item.userEmail}</Text>
+          <Text>Date: {item.createdAt?.toDate().toString()}</Text>
+        </View>
+        {renderItems}
+        <TouchableOpacity>
+          <Text style={styles.reOrderButton}>Reorder</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderEmptyComponent = () => (
+    <View style={styles.noItemsContainer}>
+      <Text style={styles.noItemsText}>No order history found</Text>
     </View>
   );
 
@@ -117,26 +129,16 @@ const OrderHistoryScreen = ({navigation}) => {
         </TouchableOpacity>
         <Text style={styles.title}>Order History</Text>
       </View>
-      {orderHistory.length > 0 ? (
-        <FlatList
-          data={orderHistory}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={renderOrderItem}
-          inverted={false} // Change the order list
-          onEndReached={loadMoreOrderHistory}
-          onEndReachedThreshold={0.1}
-          ListEmptyComponent={
-            <View style={styles.noItemsContainer}>
-              <Text style={styles.noItemsText}>No order history found</Text>
-            </View>
-          }
-          ListFooterComponent={isLoadingMore ? <Text>Loading...</Text> : null}
-        />
-      ) : (
-        <View style={styles.noItemsContainer}>
-          <Text style={styles.noItemsText}>No order history found</Text>
-        </View>
-      )}
+      <FlatList
+        data={orderHistory}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={renderOrderItem}
+        inverted={false} // Change the order list
+        onEndReached={loadMoreOrderHistory}
+        onEndReachedThreshold={0.1}
+        ListEmptyComponent={renderEmptyComponent}
+        ListFooterComponent={isLoadingMore ? <Text>Loading...</Text> : null}
+      />
     </View>
   );
 };
