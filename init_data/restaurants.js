@@ -5,11 +5,9 @@ const RESTAURANT_DATA = [
     type: 'Take-Away',
     tags: ['burgers', 'chicken', 'coffee', 'tea', 'drinks', 'pizza', 'nuggets'],
     location: '13A Street, New york',
-    distance: 5000,
+    distance: '5000',
     time: 30,
-    images: {
-      logo: require('../src/assets/staticImages/logo/mcdonalds.png'),
-    },
+    images: require('../src/assets/staticImages/logo/mcdonalds.png'),
     categories: ['Burgers & Wraps', 'Snacks & sides', 'Desserts', 'Beverages'],
   },
   {
@@ -20,9 +18,7 @@ const RESTAURANT_DATA = [
     location: '15th Avenue, New york',
     distance: 3900,
     time: 25,
-    images: {
-      logo: require('../src/assets/staticImages/logo/burgerking.png'),
-    },
+    images: require('../src/assets/staticImages/logo/burgerking.png'),
     categories: ['Burgers', 'Whopper', 'Chicken Wings', 'Sides'],
   },
   {
@@ -32,9 +28,7 @@ const RESTAURANT_DATA = [
     time: 30,
     distance: 5000,
     tags: ['pizza', 'chicken', 'sausage', 'indian', 'veg', 'mexican', 'bread'],
-    images: {
-      logo: require('../src/assets/staticImages/logo/dominos.png'),
-    },
+    images: require('../src/assets/staticImages/logo/dominos.png'),
   },
   {
     id: '107',
@@ -44,9 +38,7 @@ const RESTAURANT_DATA = [
     location: '15th Avenue, New york',
     distance: 2600,
     time: 16,
-    images: {
-      logo: require('../src/assets/staticImages/logo/kfc.png'),
-    },
+    images: require('../src/assets/staticImages/logo/kfc.png'),
     categories: ['Chicken', 'Burgers', 'Rice Bowls', 'Snacks', 'Beverages'],
   },
 ];
