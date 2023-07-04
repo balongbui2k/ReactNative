@@ -8,7 +8,9 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  TouchableWithoutFeedback,
 } from 'react-native';
+import {useSelector} from 'react-redux';
 import Feather from 'react-native-vector-icons/Feather';
 import Separator from './../CustomHomeMenu/Separator';
 import RESTAURANT_DATA from './../../../init_data/restaurants';
@@ -18,6 +20,8 @@ import styles from '../CustomRestaurants/styles';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FOOD_DATA from './../../../init_data/foods';
 import {FoodItem} from '../../components/CustomCart/FoodCart';
+import {OrderBox} from '../../components/CustomCart/FoodCart';
+
 const ListHeader = () => (
   <View
     style={{
@@ -51,7 +55,7 @@ const ListFooter = () => (
   </View>
 );
 
-const RestaurantScreen = ({navigation: {goBack}}) => {
+const RestaurantScreen = ({navigation}) => {
   const [selectedCategory, setSelectedCategory] = useState();
 
   const [searchText, setSearchText] = useState('');
@@ -59,7 +63,6 @@ const RestaurantScreen = ({navigation: {goBack}}) => {
 
   const handleSearchTextChange = text => {
     setSearchText(text);
-    console.log('text', text);
   };
 
   useEffect(() => {
@@ -69,15 +72,29 @@ const RestaurantScreen = ({navigation: {goBack}}) => {
     setFilteredFoods(filtered);
   }, [searchText]);
 
-  const restaurantId = RESTAURANT_DATA.find(item => item.id === '100');
+  const restaurantInfos = RESTAURANT_DATA.find(item => item.id === '100');
 
-  console.log('filteredFoods', filteredFoods);
+  const cartItems = useSelector(state => state.cartStore?.carts);
+
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+    Object.values(cartItems).forEach(item => {
+      totalPrice += item.price * item.quantity;
+    });
+    return totalPrice;
+  };
+
+  const totalQuantity = Object.values(cartItems).reduce(
+    (total, item) => total + item.quantity,
+    0,
+  );
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="default" translucent backgroundColor="transparent" />
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => goBack()}
+        onPress={() => navigation.goBack()}
         hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}>
         <Ionicons name="chevron-back-outline" size={30} color="white" />
       </TouchableOpacity>
@@ -103,9 +120,11 @@ const RestaurantScreen = ({navigation: {goBack}}) => {
       <View style={{backgroundColor: 'transparent', flex: 1}}>
         <View style={styles.mainContainer}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>{restaurantId.name}</Text>
+            <Text style={styles.title}>{restaurantInfos.name}</Text>
           </View>
-          <Text style={styles.tagText}>{restaurantId?.tags?.join(' • ')}</Text>
+          <Text style={styles.tagText}>
+            {restaurantInfos?.tags?.join(' • ')}
+          </Text>
           <View style={styles.ratingReviewsContainer}>
             <Feather name="star" size={18} color="orange" />
             <Text style={styles.ratingText}>4.2</Text>
@@ -125,24 +144,24 @@ const RestaurantScreen = ({navigation: {goBack}}) => {
                 source={Images.DELIVERY_TIME}
               />
               <Text style={styles.deliveryDetailText}>
-                {restaurantId.time} min
+                {restaurantInfos.time} min
               </Text>
             </View>
             <View style={styles.rowAndCenter}>
               <Image style={styles.deliveryDetailIcon} source={Images.MARKER} />
               <Text style={styles.deliveryDetailText}>
-                {restaurantId?.distance}km
+                {restaurantInfos?.distance}km
               </Text>
             </View>
             <View style={styles.restaurantType}>
               <Text style={styles.restaurantTypeText}>
-                {restaurantId?.type}
+                {restaurantInfos?.type}
               </Text>
             </View>
           </View>
           <View style={styles.categoriesContainer}>
             <FlatList
-              data={restaurantId?.categories}
+              data={restaurantInfos?.categories}
               keyExtractor={item => item}
               horizontal
               ListHeaderComponent={ListHeader}
@@ -159,9 +178,19 @@ const RestaurantScreen = ({navigation: {goBack}}) => {
           </View>
           <ScrollView style={{height: 1000}}>
             {filteredFoods.map(item => (
-              <FoodItem item={item} />
+              <FoodItem key={item.id} item={item} />
             ))}
           </ScrollView>
+          {/* OrderBox */}
+          {Object.keys(cartItems).length > 0 && (
+            <TouchableWithoutFeedback>
+              <OrderBox
+                totalQuantity={totalQuantity}
+                totalPrice={calculateTotalPrice()}
+                onPress={() => navigation.navigate('OrderScreen')}
+              />
+            </TouchableWithoutFeedback>
+          )}
         </View>
       </View>
     </View>
