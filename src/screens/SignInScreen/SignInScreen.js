@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   ToastAndroid,
 } from 'react-native';
-
 import Logo from '../../assets/images/2khung.png';
 import {useForm} from 'react-hook-form';
 import auth from '@react-native-firebase/auth';
@@ -50,14 +49,6 @@ const SignInScreen = ({navigation}) => {
       }, 2000);
     }
     setIsLoading(false);
-  };
-
-  const handleForgotPassword = () => {
-    navigation.navigate('ForgotPassword');
-  };
-
-  const handleSignUpPress = () => {
-    navigation.navigate('SignUp');
   };
 
   const handleGoogleButtonPress = () => {
@@ -109,7 +100,7 @@ const SignInScreen = ({navigation}) => {
 
           <CustomButton
             text="Forgot password?"
-            onPress={handleForgotPassword}
+            onPress={() => navigation.navigate('ForgotPassword')}
             type="TERTIARY"
             disabled={isLoading}
           />
@@ -133,7 +124,7 @@ const SignInScreen = ({navigation}) => {
 
           <CustomButton
             text="Don't have an account? Create one"
-            onPress={handleSignUpPress}
+            onPress={() => navigation.navigate('SignUp')}
             type="TERTIARY"
             disabled={isLoading}
           />
