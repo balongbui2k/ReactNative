@@ -57,9 +57,16 @@ const ListFooter = () => (
 
 const RestaurantScreen = ({navigation}) => {
   const [selectedCategory, setSelectedCategory] = useState();
-
   const [searchText, setSearchText] = useState('');
   const [filteredFoods, setFilteredFoods] = useState([]);
+  const [showTextInput, setShowTextInput] = useState(false);
+
+  const handleSearchPress = () => {
+    setShowTextInput(!showTextInput);
+    if (!showTextInput) {
+      setSearchText('');
+    }
+  };
 
   const handleSearchTextChange = text => {
     setSearchText(text);
@@ -100,18 +107,35 @@ const RestaurantScreen = ({navigation}) => {
       </TouchableOpacity>
       {/* Search Bar */}
       <View style={{flexDirection: 'row', zIndex: 9}}>
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchText}
-            placeholder="Search..."
-            value={searchText}
-            onChangeText={handleSearchTextChange}
+        {showTextInput ? (
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={styles.searchText}
+              placeholder="Search..."
+              value={searchText}
+              onChangeText={handleSearchTextChange}
+            />
+            <Ionicons
+              name="close-outline"
+              size={30}
+              color="white"
+              hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
+              onPress={handleSearchPress}
+              style={{marginLeft: 8}}
+            />
+          </View>
+        ) : (
+          <Ionicons
+            style={styles.searchSection}
+            name="search-outline"
+            size={25}
+            color="white"
+            hitSlop={{top: 40, bottom: 40, left: 40, right: 40}}
+            onPress={handleSearchPress}
           />
-        </View>
-        <View style={styles.searchSection}>
-          <Ionicons name="search-outline" size={25} color="white" />
-        </View>
+        )}
       </View>
+
       <Image
         source={require('../../assets/staticImages/gallery/square/hd/burgers.png')}
         style={styles.backgroundImage}
