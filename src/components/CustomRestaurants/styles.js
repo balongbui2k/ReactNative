@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     justifyContent: 'space-between',
   },
+  listContainer: {paddingBottom: 64},
   deliveryDetailText: {
     marginLeft: 3,
     fontSize: 12,
