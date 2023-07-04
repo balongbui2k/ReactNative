@@ -8,18 +8,11 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Images from '../../constants/Images';
+import {useNavigation} from '@react-navigation/native';
 
-const RestaurantDetails = ({
-  name,
-  time,
-  distance,
-  tags,
-  images: {logo},
-  navigate,
-}) => {
+const RestaurantDetails = ({name, time, distance, tags, images}) => {
   const navigation = useNavigation();
   return (
     <SafeAreaView>
@@ -30,7 +23,7 @@ const RestaurantDetails = ({
           <View style={styles.container}>
             <View>
               <Image
-                source={logo}
+                source={images}
                 style={{
                   width: 100,
                   height: 100,
@@ -45,9 +38,9 @@ const RestaurantDetails = ({
               <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>{name}</Text>
                 <View style={styles.rowAndCenter}>
-                  <FontAwesome />
+                  <FontAwesome name="star" color="orange" />
                   <Text style={styles.ratingText}>4.2</Text>
-                  <Text style={styles.reviewsText}>({233})</Text>
+                  <Text style={styles.reviewsText}>(233)</Text>
                 </View>
               </View>
               <Text style={styles.tagsText}>{tags?.join(' • ')}</Text>
