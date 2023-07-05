@@ -43,6 +43,7 @@ export const FoodItem = ({item}) => {
                   size={22}
                   color="orange"
                   onPress={handleRemoveFromCart}
+                  hitSlop={{top: 40, bottom: 40, left: 40, right: 40}}
                 />
                 <Text style={styles.itemCountText}>{itemQuantity}</Text>
               </>
@@ -52,6 +53,7 @@ export const FoodItem = ({item}) => {
               size={22}
               color="orange"
               onPress={handleAddToCart}
+              hitSlop={{top: 40, bottom: 40, left: 40, right: 40}}
             />
           </View>
         </View>
@@ -62,7 +64,7 @@ export const FoodItem = ({item}) => {
 
 export const OrderBox = ({totalQuantity, totalPrice, onPress}) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.checkoutContainer}>
+    <View onPress={onPress} style={styles.checkoutContainer}>
       <Feather
         name="shopping-cart"
         size={24}
@@ -77,6 +79,6 @@ export const OrderBox = ({totalQuantity, totalPrice, onPress}) => {
       <TouchableOpacity style={styles.checkoutButton} onPress={onPress}>
         <Text style={styles.checkoutButtonText}>Checkout</Text>
       </TouchableOpacity>
-    </TouchableOpacity>
+    </View>
   );
 };
