@@ -9,6 +9,8 @@ import {
   TextInput,
   ScrollView,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  useWindowDimensions,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import Feather from 'react-native-vector-icons/Feather';
@@ -56,6 +58,7 @@ const ListFooter = () => (
 );
 
 const RestaurantScreen = ({navigation}) => {
+  const {height} = useWindowDimensions();
   const [selectedCategory, setSelectedCategory] = useState();
   const [searchText, setSearchText] = useState('');
   const [filteredFoods, setFilteredFoods] = useState([]);
@@ -79,7 +82,7 @@ const RestaurantScreen = ({navigation}) => {
     setFilteredFoods(filtered);
   }, [searchText]);
 
-  const restaurantInfos = RESTAURANT_DATA.find(item => item.id === '100');
+  const restaurantInfo = RESTAURANT_DATA.find(item => item.id === '100');
 
   const cartItems = useSelector(state => state.cartStore?.carts);
 
@@ -97,127 +100,140 @@ const RestaurantScreen = ({navigation}) => {
   );
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="default" translucent backgroundColor="transparent" />
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-        hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}>
-        <Ionicons name="chevron-back-outline" size={30} color="white" />
-      </TouchableOpacity>
-      {/* Search Bar */}
-      <View style={{flexDirection: 'row', zIndex: 9}}>
-        {showTextInput ? (
-          <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.searchText}
-              placeholder="Search..."
-              value={searchText}
-              onChangeText={handleSearchTextChange}
-            />
+    <KeyboardAvoidingView
+      style={{height}}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
+      <View style={styles.container}>
+        <StatusBar
+          barStyle="default"
+          translucent
+          backgroundColor="transparent"
+        />
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+          hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}>
+          <Ionicons name="chevron-back-outline" size={30} color="white" />
+        </TouchableOpacity>
+        {/* Search Bar */}
+        <View style={{flexDirection: 'row', zIndex: 9}}>
+          {showTextInput ? (
+            <View style={styles.searchContainer}>
+              <TextInput
+                style={styles.searchText}
+                placeholder="Meo meo meo meo"
+                value={searchText}
+                onChangeText={handleSearchTextChange}
+              />
+              <Ionicons
+                name="close-outline"
+                size={30}
+                color="white"
+                hitSlop={{top: 50, bottom: 50, left: 50, right: 50}}
+                onPress={handleSearchPress}
+                style={{marginLeft: 8}}
+              />
+            </View>
+          ) : (
             <Ionicons
-              name="close-outline"
-              size={30}
+              style={styles.searchSection}
+              name="search-outline"
+              size={25}
               color="white"
-              hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
+              hitSlop={{top: 50, bottom: 50, left: 50, right: 50}}
               onPress={handleSearchPress}
-              style={{marginLeft: 8}}
             />
-          </View>
-        ) : (
-          <Ionicons
-            style={styles.searchSection}
-            name="search-outline"
-            size={25}
-            color="white"
-            hitSlop={{top: 40, bottom: 40, left: 40, right: 40}}
-            onPress={handleSearchPress}
-          />
-        )}
-      </View>
-
-      <Image
-        source={require('../../assets/staticImages/gallery/square/hd/burgers.png')}
-        style={styles.backgroundImage}
-      />
-      <Separator height={35} />
-      <View style={{backgroundColor: 'transparent', flex: 1}}>
-        <View style={styles.mainContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{restaurantInfos.name}</Text>
-          </View>
-          <Text style={styles.tagText}>
-            {restaurantInfos?.tags?.join(' • ')}
-          </Text>
-          <View style={styles.ratingReviewsContainer}>
-            <Feather name="star" size={18} color="orange" />
-            <Text style={styles.ratingText}>4.2</Text>
-            <Text style={styles.reviewsText}>(455 Reviews)</Text>
-          </View>
-          <View style={styles.deliveryDetailsContainer}>
-            <View style={styles.rowAndCenter}>
-              <Image
-                style={styles.deliveryDetailIcon}
-                source={Images.DELIVERY_CHARGE}
-              />
-              <Text style={styles.deliveryDetailText}>Free Delivery</Text>
-            </View>
-            <View style={styles.rowAndCenter}>
-              <Image
-                style={styles.deliveryDetailIcon}
-                source={Images.DELIVERY_TIME}
-              />
-              <Text style={styles.deliveryDetailText}>
-                {restaurantInfos.time} min
-              </Text>
-            </View>
-            <View style={styles.rowAndCenter}>
-              <Image style={styles.deliveryDetailIcon} source={Images.MARKER} />
-              <Text style={styles.deliveryDetailText}>
-                {restaurantInfos?.distance}km
-              </Text>
-            </View>
-            <View style={styles.restaurantType}>
-              <Text style={styles.restaurantTypeText}>
-                {restaurantInfos?.type}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.categoriesContainer}>
-            <FlatList
-              data={restaurantInfos?.categories}
-              keyExtractor={item => item}
-              horizontal
-              ListHeaderComponent={ListHeader}
-              ListFooterComponent={ListFooter}
-              showsHorizontalScrollIndicator={false}
-              renderItem={({item}) => (
-                <CategoryListItem
-                  name={item}
-                  isActive={item === selectedCategory}
-                  selectCategory={() => setSelectedCategory(item)}
-                />
-              )}
-            />
-          </View>
-          <ScrollView style={{height: 1000}}>
-            {filteredFoods.map(item => (
-              <FoodItem key={item.id} item={item} />
-            ))}
-          </ScrollView>
-          {/* OrderBox */}
-          {Object.keys(cartItems).length > 0 && (
-            <TouchableWithoutFeedback>
-              <OrderBox
-                totalQuantity={totalQuantity}
-                totalPrice={calculateTotalPrice()}
-                onPress={() => navigation.navigate('OrderScreen')}
-              />
-            </TouchableWithoutFeedback>
           )}
         </View>
+
+        <Image
+          source={require('../../assets/staticImages/gallery/square/hd/burgers.png')}
+          style={styles.backgroundImage}
+        />
+        <Separator height={35} />
+        <View style={{backgroundColor: 'transparent', flex: 1}}>
+          <View style={styles.mainContainer}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>{restaurantInfo.name}</Text>
+            </View>
+            <Text style={styles.tagText}>
+              {restaurantInfo?.tags?.join(' • ')}
+            </Text>
+            <View style={styles.ratingReviewsContainer}>
+              <Feather name="star" size={18} color="orange" />
+              <Text style={styles.ratingText}>4.2</Text>
+              <Text style={styles.reviewsText}>(455 Reviews)</Text>
+            </View>
+            <View style={styles.deliveryDetailsContainer}>
+              <View style={styles.rowAndCenter}>
+                <Image
+                  style={styles.deliveryDetailIcon}
+                  source={Images.DELIVERY_CHARGE}
+                />
+                <Text style={styles.deliveryDetailText}>Free Delivery</Text>
+              </View>
+              <View style={styles.rowAndCenter}>
+                <Image
+                  style={styles.deliveryDetailIcon}
+                  source={Images.DELIVERY_TIME}
+                />
+                <Text style={styles.deliveryDetailText}>
+                  {restaurantInfo.time} min
+                </Text>
+              </View>
+              <View style={styles.rowAndCenter}>
+                <Image
+                  style={styles.deliveryDetailIcon}
+                  source={Images.MARKER}
+                />
+                <Text style={styles.deliveryDetailText}>
+                  {restaurantInfo?.distance}km
+                </Text>
+              </View>
+              <View style={styles.restaurantType}>
+                <Text style={styles.restaurantTypeText}>
+                  {restaurantInfo?.type}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.categoriesContainer}>
+              <FlatList
+                data={restaurantInfo?.categories}
+                keyExtractor={item => item}
+                horizontal
+                ListHeaderComponent={ListHeader}
+                ListFooterComponent={ListFooter}
+                showsHorizontalScrollIndicator={false}
+                renderItem={({item}) => (
+                  <CategoryListItem
+                    name={item}
+                    isActive={item === selectedCategory}
+                    selectCategory={() => setSelectedCategory(item)}
+                  />
+                )}
+              />
+            </View>
+            <ScrollView style={{height: 1000}}>
+              <View style={{paddingBottom: 64}}>
+                {filteredFoods.map(item => (
+                  <FoodItem key={item.id} item={item} />
+                ))}
+              </View>
+            </ScrollView>
+            {/* OrderBox */}
+            {Object.keys(cartItems).length > 0 && (
+              <TouchableWithoutFeedback>
+                <OrderBox
+                  totalQuantity={totalQuantity}
+                  totalPrice={calculateTotalPrice()}
+                  onPress={() => navigation.navigate('OrderScreen')}
+                />
+              </TouchableWithoutFeedback>
+            )}
+          </View>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
