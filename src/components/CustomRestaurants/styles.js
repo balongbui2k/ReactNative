@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   },
   searchSection: {
     flexDirection: 'row',
-    marginTop: 35,
+    marginTop: 40,
     marginLeft: '90%',
   },
   searchText: {
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
-    height: '75%',
+    height: 500,
     position: 'absolute',
     bottom: 0,
     width: '100%',
@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     justifyContent: 'space-between',
   },
-  listContainer: {paddingBottom: 64},
   deliveryDetailText: {
     marginLeft: 3,
     fontSize: 12,

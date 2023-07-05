@@ -1,5 +1,4 @@
-
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   //* Item Count text
@@ -131,4 +130,4 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
-export default styles
+export default styles;

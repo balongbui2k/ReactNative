@@ -67,7 +67,7 @@ const FOOD_DATA = [
   {
     id: '2007',
     restaurantId: '100',
-    name: 'Sundae (Chocolate Brownie',
+    name: 'Sundae (Chocolate Brownie)',
     price: 130,
     image:
       'https://firebasestorage.googleapis.com/v0/b/delivery-app-b198e.appspot.com/o/sundaechocolatebrownie.png?alt=media&token=360bcc22-adb0-4232-8458-3183ba4cbeeb',
@@ -78,7 +78,7 @@ const FOOD_DATA = [
   {
     id: '2008',
     restaurantId: '100',
-    name: 'McFlurry (Choco Crunch',
+    name: 'McFlurry (Chocolate Crunch)',
     price: 200,
     image:
       'https://firebasestorage.googleapis.com/v0/b/delivery-app-b198e.appspot.com/o/mcflurrychococrunch.png?alt=media&token=b8d35a9f-3f22-4c6c-9f9b-929cdd5dc640',
