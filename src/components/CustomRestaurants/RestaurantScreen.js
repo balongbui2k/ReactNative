@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {
-  StatusBar,
   View,
   Text,
   FlatList,
@@ -23,6 +22,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FOOD_DATA from './../../../init_data/foods';
 import {FoodItem} from '../../components/CustomCart/FoodCart';
 import {OrderBox} from '../../components/CustomCart/FoodCart';
+import {hitSlop} from './../../constants/GeneralStyles';
+import CustomStatusBar from '../../constants/GeneralStyles';
 
 const ListHeader = () => (
   <View
@@ -88,7 +89,7 @@ const RestaurantScreen = ({navigation}) => {
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;
-    Object.values(cartItems).forEach(item => {
+    Object.values().forEach(item => {
       totalPrice += item.price * item.quantity;
     });
     return totalPrice;
@@ -104,15 +105,11 @@ const RestaurantScreen = ({navigation}) => {
       style={{height}}
       behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <View style={styles.container}>
-        <StatusBar
-          barStyle="default"
-          translucent
-          backgroundColor="transparent"
-        />
+        <CustomStatusBar />
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
-          hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}>
+          onPress={navigation.goBack}
+          hitSlop={hitSlop}>
           <Ionicons name="chevron-back-outline" size={30} color="white" />
         </TouchableOpacity>
         {/* Search Bar */}
@@ -121,7 +118,7 @@ const RestaurantScreen = ({navigation}) => {
             <View style={styles.searchContainer}>
               <TextInput
                 style={styles.searchText}
-                placeholder="Meo meo meo meo"
+                placeholder="Search..."
                 value={searchText}
                 onChangeText={handleSearchTextChange}
               />
@@ -129,7 +126,7 @@ const RestaurantScreen = ({navigation}) => {
                 name="close-outline"
                 size={30}
                 color="white"
-                hitSlop={{top: 50, bottom: 50, left: 50, right: 50}}
+                hitSlop={hitSlop}
                 onPress={handleSearchPress}
                 style={{marginLeft: 8}}
               />
@@ -140,7 +137,7 @@ const RestaurantScreen = ({navigation}) => {
               name="search-outline"
               size={25}
               color="white"
-              hitSlop={{top: 50, bottom: 50, left: 50, right: 50}}
+              hitSlop={hitSlop}
               onPress={handleSearchPress}
             />
           )}
@@ -213,7 +210,7 @@ const RestaurantScreen = ({navigation}) => {
                 )}
               />
             </View>
-            <ScrollView style={{height: 1000}}>
+            <ScrollView>
               <View style={{paddingBottom: 64}}>
                 {filteredFoods.map(item => (
                   <FoodItem key={item.id} item={item} />
