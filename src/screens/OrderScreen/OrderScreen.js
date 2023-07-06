@@ -1,7 +1,6 @@
 import {
   Text,
   View,
-  StatusBar,
   Image,
   TouchableOpacity,
   FlatList,
@@ -18,6 +17,7 @@ import Images from '../../constants/Images';
 import styles from '../OrderScreen/styles';
 import {FoodItem} from './../../components/CustomCart/FoodCart';
 import CustomStatusBar from '../../constants/GeneralStyles';
+import {hitSlop} from './../../constants/GeneralStyles';
 
 const OrderScreen = ({navigation}) => {
   const cartItems = useSelector(state => state.cartStore?.carts);
@@ -42,7 +42,7 @@ const OrderScreen = ({navigation}) => {
         name: item.name,
         quantity: item.quantity,
         price: item.price,
-        image: item.image,
+        image: item.images,
       })),
       totalPrice: calculateTotalPrice(),
       discount: calculateDiscount,
@@ -76,6 +76,7 @@ const OrderScreen = ({navigation}) => {
 
   const updateCartItem = (item, newQuantity) => {
     const cartDocRef = cartCollectionRef.doc(item.id.toString());
+    // console.log('updateCartItem>>', updateCartItem);
 
     return cartDocRef
       .get()
@@ -99,7 +100,7 @@ const OrderScreen = ({navigation}) => {
     return totalPrice;
   };
 
-  const calculateDiscount = cartItems?.discount || 10;
+  const calculateDiscount = cartItems?.discount || 2;
 
   const calculateGrandTotal = calculateTotalPrice() - calculateDiscount;
 
@@ -111,7 +112,8 @@ const OrderScreen = ({navigation}) => {
       <View style={styles.headerContainer}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}>
+          onPress={() => navigation.goBack()}
+          hitSlop={hitSlop}>
           <Ionicons name="chevron-back-outline" size={30} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Order</Text>
