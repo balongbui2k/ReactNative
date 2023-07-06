@@ -24,6 +24,7 @@ import {FoodItem} from '../../components/CustomCart/FoodCart';
 import {OrderBox} from '../../components/CustomCart/FoodCart';
 import {hitSlop} from './../../constants/GeneralStyles';
 import CustomStatusBar from '../../constants/GeneralStyles';
+import {useRoute} from '@react-navigation/native';
 
 const ListHeader = () => (
   <View
@@ -59,11 +60,25 @@ const ListFooter = () => (
 );
 
 const RestaurantScreen = ({navigation}) => {
-  const {height} = useWindowDimensions();
+  const route = useRoute();
   const [selectedCategory, setSelectedCategory] = useState();
   const [searchText, setSearchText] = useState('');
-  const [filteredFoods, setFilteredFoods] = useState([]);
   const [showTextInput, setShowTextInput] = useState(false);
+  const [restaurantProducts, setRestaurantProducts] = useState([]);
+
+  const {height} = useWindowDimensions();
+
+  const restaurantId = route.params?.restaurantId;
+  const bannerImages = route.params?.bannerImages;
+
+  useEffect(() => {
+    const filteredProducts = FOOD_DATA.filter(
+      food =>
+        food.name.toLowerCase().includes(searchText.toLowerCase()) &&
+        food.restaurantId === restaurantId,
+    );
+    setRestaurantProducts(filteredProducts);
+  }, [restaurantId, searchText]);
 
   const handleSearchPress = () => {
     setShowTextInput(!showTextInput);
@@ -76,20 +91,15 @@ const RestaurantScreen = ({navigation}) => {
     setSearchText(text);
   };
 
-  useEffect(() => {
-    const filtered = FOOD_DATA.filter(food =>
-      food.name.toLowerCase().includes(searchText.toLowerCase()),
-    );
-    setFilteredFoods(filtered);
-  }, [searchText]);
-
-  const restaurantInfo = RESTAURANT_DATA.find(item => item.id === '100');
+  const restaurantInfo = RESTAURANT_DATA.find(
+    item => item.restaurantId === restaurantId,
+  );
 
   const cartItems = useSelector(state => state.cartStore?.carts);
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;
-    Object.values().forEach(item => {
+    Object.values(cartItems).forEach(item => {
       totalPrice += item.price * item.quantity;
     });
     return totalPrice;
@@ -143,10 +153,7 @@ const RestaurantScreen = ({navigation}) => {
           )}
         </View>
 
-        <Image
-          source={require('../../assets/staticImages/gallery/square/hd/burgers.png')}
-          style={styles.backgroundImage}
-        />
+        <Image source={bannerImages} style={styles.backgroundImage} />
         <Separator height={35} />
         <View style={{backgroundColor: 'transparent', flex: 1}}>
           <View style={styles.mainContainer}>
@@ -210,13 +217,12 @@ const RestaurantScreen = ({navigation}) => {
                 )}
               />
             </View>
-            <ScrollView>
-              <View style={{paddingBottom: 64}}>
-                {filteredFoods.map(item => (
-                  <FoodItem key={item.id} item={item} />
-                ))}
-              </View>
-            </ScrollView>
+            <FlatList
+              data={restaurantProducts}
+              keyExtractor={item => item.id}
+              renderItem={({item}) => <FoodItem item={item} />}
+              contentContainerStyle={{paddingBottom: 64}}
+            />
             {/* OrderBox */}
             {Object.keys(cartItems).length > 0 && (
               <TouchableWithoutFeedback>
