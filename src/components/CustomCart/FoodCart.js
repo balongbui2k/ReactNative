@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import Feather from 'react-native-vector-icons/Feather';
 import {addToCart, removeFromCart} from './../../actions/CartAction';
 import styles from '../CustomCart/styles';
+import {hitSlop} from './../../constants/GeneralStyles';
 
 export const FoodItem = ({item}) => {
   const dispatch = useDispatch();
@@ -43,7 +44,7 @@ export const FoodItem = ({item}) => {
                   size={22}
                   color="orange"
                   onPress={handleRemoveFromCart}
-                  hitSlop={{top: 40, bottom: 40, left: 40, right: 40}}
+                  hitSlop={hitSlop}
                 />
                 <Text style={styles.itemCountText}>{itemQuantity}</Text>
               </>
@@ -53,7 +54,7 @@ export const FoodItem = ({item}) => {
               size={22}
               color="orange"
               onPress={handleAddToCart}
-              hitSlop={{top: 40, bottom: 40, left: 40, right: 40}}
+              hitSlop={hitSlop}
             />
           </View>
         </View>
