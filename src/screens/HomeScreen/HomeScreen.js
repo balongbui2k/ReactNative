@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {
+  StatusBar,
   View,
   Text,
-  StyleSheet,
-  StatusBar,
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
@@ -19,6 +18,7 @@ import RESTAURANT_DATA from '../../../init_data/restaurants';
 import RestaurantDetails from './../../components/CustomRestaurants/RestaurantDetails';
 import styles from './styles';
 import SearchBar from './SearchBar';
+import CustomStatusBar from '../../constants/GeneralStyles';
 
 const HomeScreen = ({navigation}) => {
   const [activeCategory, setActiveCategory] = useState(null);
@@ -60,12 +60,8 @@ const HomeScreen = ({navigation}) => {
   return (
     <SafeAreaView style={{flex: 1, marginBottom: 16}}>
       <View style={styles.container}>
-        <StatusBar
-          barStyle="light-content"
-          backgroundColor="#c84"
-          translucent
-        />
-        <Separator height={StatusBar.currentHeight} />
+        <CustomStatusBar />
+
         <View style={styles.backgroundCurvedContainer} />
         <View style={styles.headerContainer}>
           <View style={styles.locationContainer}>

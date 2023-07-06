@@ -4,6 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {FlatList} from 'react-native-bidirectional-infinite-scroll';
+import {hitSlop} from './../../constants/GeneralStyles';
 
 const OrderHistoryScreen = ({navigation}) => {
   const [orderHistory, setOrderHistory] = useState([]);
@@ -123,7 +124,7 @@ const OrderHistoryScreen = ({navigation}) => {
       <View style={styles.headerContainer}>
         <TouchableOpacity
           style={styles.backButton}
-          hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
+          hitSlop={hitSlop}
           onPress={() => navigation.navigate('Home')}>
           <Ionicons name="home-outline" size={25} />
         </TouchableOpacity>

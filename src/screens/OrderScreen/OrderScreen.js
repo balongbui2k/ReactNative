@@ -1,5 +1,4 @@
 import {
-  StyleSheet,
   Text,
   View,
   StatusBar,
@@ -12,31 +11,30 @@ import React, {useState, useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
-import {addToCart, removeFromCart, resetCart} from './../../actions/CartAction';
+import {resetCart} from './../../actions/CartAction';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Images from '../../constants/Images';
 import styles from '../OrderScreen/styles';
+import {FoodItem} from './../../components/CustomCart/FoodCart';
+import CustomStatusBar from '../../constants/GeneralStyles';
 
 const OrderScreen = ({navigation}) => {
   const cartItems = useSelector(state => state.cartStore?.carts);
   const dispatch = useDispatch();
   const [purchasedItems, setPurchasedItems] = useState([]);
-
   const cartCollectionRef = firestore().collection('Order');
-
   const currentUser = auth().currentUser;
-  // console.log('currentUser', JSON.stringify(currentUser, null, 2));
   const [isLoading, setIsLoading] = useState(false);
-
-  const removeAllPurchasedItems = () => {
-    setPurchasedItems([]);
-  };
 
   useEffect(() => {
     const items = Object.values(cartItems);
     setPurchasedItems(items);
   }, [cartItems]);
+
+  const removeAllPurchasedItems = () => {
+    setPurchasedItems([]);
+  };
 
   const onOrderPressed = async () => {
     const orderData = {
@@ -47,22 +45,20 @@ const OrderScreen = ({navigation}) => {
         image: item.image,
       })),
       totalPrice: calculateTotalPrice(),
-      discount: calculateDiscount(),
-      grandTotal: calculateGrandTotal(),
+      discount: calculateDiscount,
+      grandTotal: calculateGrandTotal,
       userEmail: currentUser.email,
       createdAt: new Date(),
     };
-    console.log('orderData>>', JSON.stringify(orderData, null, 2));
 
     try {
       setIsLoading(true);
       await saveOrderToFirestore(orderData);
       removeAllPurchasedItems();
-      // Delete cartItems
       dispatch(resetCart());
       navigation.navigate('OrderSuccess');
       ToastAndroid.show(
-        'OrderSuccessfully',
+        'Order Successfully',
         ToastAndroid.BOTTOM,
         ToastAndroid.LONG,
       );
@@ -90,94 +86,31 @@ const OrderScreen = ({navigation}) => {
           return cartDocRef.set({...item, quantity: newQuantity});
         }
       })
-      .then(() => {})
       .catch(error => {
         console.error('Error updating cart item:', error);
       });
   };
 
   const calculateTotalPrice = () => {
-    const totalPrice = Object.values(cartItems).reduce(
+    const totalPrice = purchasedItems.reduce(
       (total, item) => total + item.price * item.quantity,
       0,
     );
     return totalPrice;
   };
 
-  const calculateDiscount = () => {
-    return cartItems?.discount || 10;
-  };
+  const calculateDiscount = cartItems?.discount || 10;
 
-  const discountPrice = calculateDiscount();
-  const calculateGrandTotal = () => {
-    return calculateTotalPrice() - discountPrice;
-  };
-
-  //* Food Items
-  const FoodItem = ({item}) => {
-    const [itemCount, setItemCount] = useState(item.quantity);
-
-    const handleAddToCart = () => {
-      setItemCount(prevCount => prevCount + 1);
-      dispatch(addToCart(item));
-      updateCartItem(item, item.quantity + 1);
-    };
-
-    const handleRemoveFromCart = () => {
-      if (itemCount > 0) {
-        setItemCount(prevCount => prevCount - 1);
-        dispatch(removeFromCart(item));
-      }
-    };
-
-    return (
-      <View style={styles.foodContainer}>
-        <Image style={styles.image} source={{uri: item.image}} />
-        <View style={styles.detailContainer}>
-          <View>
-            <Text style={styles.titleText}>{item.name}</Text>
-            <Text style={styles.descriptionText}>{item.description}</Text>
-          </View>
-          <View style={styles.footerContainer}>
-            <Text style={styles.priceText}>${item.price}</Text>
-            <View style={styles.itemAddContainer}>
-              {itemCount > 0 && (
-                <>
-                  <Feather
-                    name="minus-square"
-                    size={22}
-                    color="orange"
-                    onPress={handleRemoveFromCart}
-                  />
-                  <Text style={styles.itemCountText}>{itemCount}</Text>
-                </>
-              )}
-              <Feather
-                name="plus-square"
-                size={22}
-                color="orange"
-                onPress={handleAddToCart}
-              />
-            </View>
-          </View>
-        </View>
-      </View>
-    );
-  };
+  const calculateGrandTotal = calculateTotalPrice() - calculateDiscount;
 
   const renderItem = ({item}) => <FoodItem item={item} />;
 
   return (
     <View style={styles.container}>
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor={'white'}
-        translucent
-      />
+      <CustomStatusBar />
       <View style={styles.headerContainer}>
         <TouchableOpacity
           style={styles.backButton}
-          hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
           onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back-outline" size={30} />
         </TouchableOpacity>
@@ -226,7 +159,7 @@ const OrderScreen = ({navigation}) => {
 
         <View style={styles.amountSubContainer}>
           <Text style={styles.amountLabelText}>Discount</Text>
-          <Text style={styles.amountText}>${calculateDiscount()}</Text>
+          <Text style={styles.amountText}>${calculateDiscount}</Text>
         </View>
         <View style={styles.amountSubContainer}>
           <Text style={styles.amountLabelText}>Delivery Fee</Text>
@@ -243,7 +176,7 @@ const OrderScreen = ({navigation}) => {
       </View>
       <View style={styles.totalContainer}>
         <Text style={styles.totalLabelText}>Total</Text>
-        <Text style={styles.totalText}>${calculateGrandTotal()}</Text>
+        <Text style={styles.totalText}>${calculateGrandTotal}</Text>
       </View>
       <TouchableOpacity
         style={[
@@ -258,7 +191,7 @@ const OrderScreen = ({navigation}) => {
             {isLoading ? 'Loading...' : 'Order'}
           </Text>
         </View>
-        <Text style={styles.orderTotalText}>${calculateGrandTotal()}</Text>
+        <Text style={styles.orderTotalText}>${calculateGrandTotal}</Text>
       </TouchableOpacity>
     </View>
   );
