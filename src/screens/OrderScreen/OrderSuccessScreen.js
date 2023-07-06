@@ -5,11 +5,11 @@ const OrderSuccessScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../assets/images/OrderSuccessIcon.png')}
+        source={require('../../assets/images/deliver.png')}
         style={styles.image}
         resizeMode="contain"
       />
-      <Text style={styles.title}>Successfully</Text>
+      <Text style={styles.title}>Order Successfully</Text>
       <Text style={styles.subtitle}>Just wait food delivery to your home</Text>
       <TouchableOpacity
         style={styles.buttonOrderHistory}
@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
-    paddingHorizontal: 16,
   },
   image: {
     width: 250,
@@ -40,12 +39,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    marginBottom: 16,
+    marginVertical: 20,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 18,
-    marginBottom: 64,
+    marginBottom: 50,
     textAlign: 'center',
   },
   buttonOrderHistory: {

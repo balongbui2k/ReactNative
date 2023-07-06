@@ -11,17 +11,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 23,
   },
-  backButton: {
-    marginTop: 16,
-  },
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
     lineHeight: 20 * 1.4,
     width: 90,
     textAlign: 'center',
-    marginLeft: 100,
-    marginTop: 16,
+    marginLeft: 110,
   },
   foodList: {
     paddingBottom: 10,
