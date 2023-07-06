@@ -9,18 +9,18 @@ const styles = StyleSheet.create({
   searchContainer: {
     backgroundColor: 'white',
     height: 45,
-    width: '70%',
+    width: '73%',
     borderRadius: 8,
-    marginTop: 30,
-    marginLeft: 70,
+    marginLeft: 60,
+    marginTop: 5,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   searchSection: {
     flexDirection: 'row',
-    marginTop: 40,
     marginLeft: '90%',
+    marginTop: 11.5,
   },
   searchText: {
     color: 'grey',
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     top: 30,
-    left: 20,
+    left: 10,
     zIndex: 9999,
     padding: 5,
     borderRadius: 20,

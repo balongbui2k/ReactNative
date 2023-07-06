@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {
-  StatusBar,
   View,
   Text,
   ScrollView,
@@ -80,7 +79,6 @@ const HomeScreen = ({navigation}) => {
               <Text style={styles.alertBadgeText}></Text>
             </View>
           </View>
-
           {/* Search Bar */}
           <SearchBar
             searchText={searchText}
@@ -108,7 +106,7 @@ const HomeScreen = ({navigation}) => {
           </View>
           <ScrollView>
             {filteredRestaurants.map(item => (
-              <RestaurantDetails {...item} key={item?.id} />
+              <RestaurantDetails {...item} key={item?.restaurantId} />
             ))}
           </ScrollView>
         </View>
