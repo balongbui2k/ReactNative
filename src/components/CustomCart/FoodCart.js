@@ -26,7 +26,7 @@ export const FoodItem = ({item}) => {
     <View style={styles.foodContainer}>
       <Image
         style={styles.image}
-        source={{uri: item.image}}
+        source={{uri: item.images}}
         resizeMode="contain"
       />
       <View style={styles.detailContainer}>
