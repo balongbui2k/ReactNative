@@ -3,9 +3,22 @@ import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import CustomInput from '../../components/CustomInput/CustomInput';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import {useForm} from 'react-hook-form';
+import {ROUTES} from './../../constants/routeNames';
+import {useNavigation} from '@react-navigation/native';
 
-const ForgotPasswordScreen = ({navigation}) => {
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+const ForgotPasswordScreen = () => {
+  const navigation = useNavigation();
   const {control, handleSubmit} = useForm();
+
+  const handleBackToSignIn = () => {
+    navigation.navigate(ROUTES.SIGN_IN_SCREEN);
+  };
+  const handleNewPassWordScreen = () => {
+    navigation.navigate(ROUTES.NEW_PASSWORD_SCREEN);
+  };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -18,17 +31,21 @@ const ForgotPasswordScreen = ({navigation}) => {
           placeholder="Email"
           rules={{
             required: 'Email is required',
+            pattern: {
+              value: EMAIL_REGEX,
+              message: 'Email is invalid ',
+            },
           }}
         />
 
         <CustomButton
           text="Send"
-          onPress={handleSubmit(() => navigation.navigate('NewPassword'))}
+          onPress={handleSubmit(handleNewPassWordScreen)}
         />
 
         <CustomButton
           text="Back to Sign in screen"
-          onPress={() => navigation.navigate('SignIn')}
+          onPress={handleBackToSignIn}
           type="TERTIARY"
         />
       </View>

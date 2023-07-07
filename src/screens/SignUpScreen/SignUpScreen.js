@@ -12,8 +12,10 @@ import auth from '@react-native-firebase/auth';
 import CustomInput from './../../components/CustomInput/CustomInput';
 import CustomButton from './../../components/CustomButton/CustomButton';
 import {signUpErrors} from './../../constants/Validate';
+import {ROUTES} from './../../constants/routeNames';
 
-const EMAIL_REGEX = /@gmail\.com$/;
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 const SignUpScreen = ({navigation}) => {
   const {
@@ -40,7 +42,7 @@ const SignUpScreen = ({navigation}) => {
         ToastAndroid.CENTER,
         ToastAndroid.LONG,
       );
-      navigation.navigate('SignIn');
+      navigation.navigate(ROUTES.SIGN_IN_SCREEN);
     } catch (error) {
       setError(signUpErrors[error.code]);
 
@@ -51,6 +53,7 @@ const SignUpScreen = ({navigation}) => {
     setIsLoading(false);
   };
 
+  const handleBackToSignIn = () => navigation.navigate(ROUTES.SIGN_IN_SCREEN);
   const handleTermsOfUsePressed = () => {
     console.warn('onTermsOfUsePressed');
   };
@@ -147,7 +150,7 @@ const SignUpScreen = ({navigation}) => {
 
         <CustomButton
           text="Have an account? Sign in"
-          onPress={() => navigation.navigate('SignIn')}
+          onPress={handleBackToSignIn}
           type="TERTIARY"
         />
       </View>
