@@ -16,6 +16,7 @@ import {useForm} from 'react-hook-form';
 import auth from '@react-native-firebase/auth';
 import {signInErrors} from './../../constants/Validate';
 import CustomButton from './../../components/CustomButton/CustomButton';
+import {ROUTES} from './../../constants/routeNames';
 
 const SignInScreen = ({navigation}) => {
   const {
@@ -49,6 +50,14 @@ const SignInScreen = ({navigation}) => {
       }, 2000);
     }
     setIsLoading(false);
+  };
+
+  const onForgotPasswordPressed = () => {
+    navigation.navigate(ROUTES.FORGOT_PASSWORD_SCREEN);
+  };
+
+  const onSignUpPress = () => {
+    navigation.navigate(ROUTES.SIGN_UP_SCREEN);
   };
 
   const handleGoogleButtonPress = () => {
@@ -100,7 +109,7 @@ const SignInScreen = ({navigation}) => {
 
           <CustomButton
             text="Forgot password?"
-            onPress={() => navigation.navigate('ForgotPassword')}
+            onPress={onForgotPasswordPressed}
             type="TERTIARY"
             disabled={isLoading}
           />
@@ -124,7 +133,7 @@ const SignInScreen = ({navigation}) => {
 
           <CustomButton
             text="Don't have an account? Create one"
-            onPress={() => navigation.navigate('SignUp')}
+            onPress={onSignUpPress}
             type="TERTIARY"
             disabled={isLoading}
           />

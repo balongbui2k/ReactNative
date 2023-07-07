@@ -6,7 +6,6 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  ScrollView,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   useWindowDimensions,
@@ -24,7 +23,8 @@ import {FoodItem} from '../../components/CustomCart/FoodCart';
 import {OrderBox} from '../../components/CustomCart/FoodCart';
 import {hitSlop} from './../../constants/GeneralStyles';
 import CustomStatusBar from '../../constants/GeneralStyles';
-import {useRoute} from '@react-navigation/native';
+import {useRoute, useNavigation} from '@react-navigation/native';
+import {ROUTES} from './../../constants/routeNames';
 
 const ListHeader = () => (
   <View
@@ -59,8 +59,9 @@ const ListFooter = () => (
   </View>
 );
 
-const RestaurantScreen = ({navigation}) => {
+const RestaurantScreen = () => {
   const route = useRoute();
+  const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState();
   const [searchText, setSearchText] = useState('');
   const [showTextInput, setShowTextInput] = useState(false);
@@ -110,6 +111,14 @@ const RestaurantScreen = ({navigation}) => {
     0,
   );
 
+  const onOrderScreenPressed = () => {
+    navigation.navigate(ROUTES.ORDER_SCREEN);
+  };
+
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <KeyboardAvoidingView
       style={{height}}
@@ -118,7 +127,7 @@ const RestaurantScreen = ({navigation}) => {
         <CustomStatusBar />
         <TouchableOpacity
           style={styles.backButton}
-          onPress={navigation.goBack}
+          onPress={handleGoBack}
           hitSlop={hitSlop}>
           <Ionicons name="chevron-back-outline" size={30} color="white" />
         </TouchableOpacity>
@@ -229,7 +238,7 @@ const RestaurantScreen = ({navigation}) => {
                 <OrderBox
                   totalQuantity={totalQuantity}
                   totalPrice={calculateTotalPrice()}
-                  onPress={() => navigation.navigate('OrderScreen')}
+                  onPress={onOrderScreenPressed}
                 />
               </TouchableWithoutFeedback>
             )}

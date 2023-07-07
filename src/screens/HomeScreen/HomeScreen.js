@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import Separator from '../../components/CustomHomeMenu/Separator';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
@@ -18,15 +17,17 @@ import RestaurantDetails from './../../components/CustomRestaurants/RestaurantDe
 import styles from './styles';
 import SearchBar from './SearchBar';
 import CustomStatusBar from '../../constants/GeneralStyles';
+import {useNavigation} from '@react-navigation/native';
+import {ROUTES} from './../../constants/routeNames';
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = () => {
+  const navigation = useNavigation();
   const [activeCategory, setActiveCategory] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
 
   const handleSearchTextChange = text => {
     setSearchText(text);
-    // console.log('text', text);
   };
 
   const CategoryMenuItem = ({
@@ -53,8 +54,11 @@ const HomeScreen = ({navigation}) => {
       restaurant.name.toLowerCase().includes(searchText.toLowerCase()),
     );
     setFilteredRestaurants(filtered);
-    // console.log('filtered>>>', JSON.stringify(filtered, null, 2));
   }, [searchText]);
+
+  const onOrderHistoryPressed = () => {
+    navigation.navigate(ROUTES.ORDER_HISTORY);
+  };
 
   return (
     <SafeAreaView style={{flex: 1, marginBottom: 16}}>
@@ -73,7 +77,7 @@ const HomeScreen = ({navigation}) => {
               size={22}
               color="white"
               style={{position: 'absolute', right: 0}}
-              onPress={() => navigation.navigate('OrderHistory')}
+              onPress={onOrderHistoryPressed}
             />
             <View style={styles.alertBadge}>
               <Text style={styles.alertBadgeText}></Text>

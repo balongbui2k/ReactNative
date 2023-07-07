@@ -4,18 +4,26 @@ import CustomInput from '../../components/CustomInput';
 import CustomButton from '../../components/CustomButton';
 import {useNavigation} from '@react-navigation/native';
 import {useForm} from 'react-hook-form';
+import {ROUTES} from './../../constants/routeNames';
 
 const NewPasswordScreen = () => {
-  const {control, handleSubmit} = useForm();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: {errors},
+  } = useForm();
+
+  const pwd = watch('password');
 
   const navigation = useNavigation();
 
-  const onSubmitPressed = data => {
-    navigation.navigate('Home');
+  const onSubmitPressed = () => {
+    navigation.navigate(ROUTES.SIGN_IN_SCREEN);
   };
 
   const onSignInPress = () => {
-    navigation.navigate('SignIn');
+    navigation.navigate(ROUTES.SIGN_IN_SCREEN);
   };
 
   return (
@@ -31,16 +39,26 @@ const NewPasswordScreen = () => {
         />
 
         <CustomInput
-          placeholder="Enter your new password"
-          name="name"
+          name="password"
           control={control}
+          placeholder="Enter your new password"
           secureTextEntry
           rules={{
             required: 'Password is required',
             minLength: {
-              value: 8,
-              message: 'Password should be at least 8 characters long',
+              value: 6,
+              message: 'Password should be at least 6 characters long',
             },
+          }}
+        />
+
+        <CustomInput
+          name="repeatPassword"
+          control={control}
+          placeholder="Repeat new password"
+          secureTextEntry
+          rules={{
+            validate: value => value === pwd || 'Passwords do not match',
           }}
         />
 

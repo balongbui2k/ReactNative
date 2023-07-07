@@ -2,6 +2,7 @@ import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {ROUTES} from './../constants/routeNames';
 
 const BottomTabs = createBottomTabNavigator();
 
@@ -23,7 +24,7 @@ export default function HomeTabs() {
         tabBarInactiveTintColor: 'lightgrey',
       }}>
       <BottomTabs.Screen
-        name="Home"
+        name={ROUTES.HOME}
         component={HomeScreen}
         options={{
           tabBarIcon: ({color}) => (

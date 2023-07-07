@@ -1,7 +1,16 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {ROUTES} from './../../constants/routeNames';
 
-const OrderSuccessScreen = ({navigation}) => {
+const OrderSuccessScreen = () => {
+  const navigation = useNavigation();
+  const onOderHistoryPressed = () => {
+    navigation.navigate(ROUTES.ORDER_HISTORY);
+  };
+  const onHomePressed = () => {
+    navigation.navigate(ROUTES.HOME);
+  };
   return (
     <View style={styles.container}>
       <Image
@@ -13,12 +22,10 @@ const OrderSuccessScreen = ({navigation}) => {
       <Text style={styles.subtitle}>Just wait food delivery to your home</Text>
       <TouchableOpacity
         style={styles.buttonOrderHistory}
-        onPress={() => navigation.navigate('OrderHistory')}>
+        onPress={onOderHistoryPressed}>
         <Text style={styles.buttonText}>Order History</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.buttonHome}
-        onPress={() => navigation.navigate('Home')}>
+      <TouchableOpacity style={styles.buttonHome} onPress={onHomePressed}>
         <Text style={styles.buttonText}>Back to Home Screen</Text>
       </TouchableOpacity>
     </View>

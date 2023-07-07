@@ -18,8 +18,11 @@ import styles from '../OrderScreen/styles';
 import {FoodItem} from './../../components/CustomCart/FoodCart';
 import CustomStatusBar from '../../constants/GeneralStyles';
 import {hitSlop} from './../../constants/GeneralStyles';
+import {useNavigation} from '@react-navigation/native';
+import {ROUTES} from './../../constants/routeNames';
 
-const OrderScreen = ({navigation}) => {
+const OrderScreen = () => {
+  const navigation = useNavigation();
   const cartItems = useSelector(state => state.cartStore?.carts);
   const dispatch = useDispatch();
   const [purchasedItems, setPurchasedItems] = useState([]);
@@ -34,6 +37,14 @@ const OrderScreen = ({navigation}) => {
 
   const removeAllPurchasedItems = () => {
     setPurchasedItems([]);
+  };
+
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
+
+  const onHomePressed = () => {
+    navigation.navigate(ROUTES.HOME);
   };
 
   const onOrderPressed = async () => {
@@ -56,7 +67,7 @@ const OrderScreen = ({navigation}) => {
       await saveOrderToFirestore(orderData);
       removeAllPurchasedItems();
       dispatch(resetCart());
-      navigation.navigate('OrderSuccess');
+      navigation.navigate(ROUTES.ORDERSUCCESS_SCREEN);
       ToastAndroid.show(
         'Order Successfully',
         ToastAndroid.BOTTOM,
@@ -75,8 +86,7 @@ const OrderScreen = ({navigation}) => {
   };
 
   const updateCartItem = (item, newQuantity) => {
-    const cartDocRef = cartCollectionRef.doc(item.id.toString());
-    // console.log('updateCartItem>>', updateCartItem);
+    const cartDocRef = () => cartCollectionRef.doc(item.id.toString());
 
     return cartDocRef
       .get()
@@ -112,7 +122,7 @@ const OrderScreen = ({navigation}) => {
       <View style={styles.headerContainer}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={handleGoBack}
           hitSlop={hitSlop}>
           <Ionicons name="chevron-back-outline" size={30} />
         </TouchableOpacity>
@@ -132,11 +142,7 @@ const OrderScreen = ({navigation}) => {
           <Text style={styles.emptyCartText}>
             Go ahead, order some foods from the menu
           </Text>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => {
-              navigation.navigate('Home');
-            }}>
+          <TouchableOpacity style={styles.addButton} onPress={onHomePressed}>
             <Text style={{color: 'white', fontWeight: '500'}}>+ Add Items</Text>
           </TouchableOpacity>
         </View>
@@ -146,12 +152,12 @@ const OrderScreen = ({navigation}) => {
           <Feather
             name="gift"
             size={30}
-            color={'orange'}
+            color="orange"
             style={{paddingLeft: 8}}
           />
           <Text style={styles.promoCodeText}>Add Promo Code</Text>
         </View>
-        <Ionicons name="chevron-forward-outline" size={20} color={'black'} />
+        <Ionicons name="chevron-forward-outline" size={20} color="black" />
       </View>
       <View style={styles.amountContainer}>
         <View style={styles.amountSubContainer}>
@@ -183,13 +189,16 @@ const OrderScreen = ({navigation}) => {
       <TouchableOpacity
         style={[
           styles.orderButton,
-          purchasedItems.length === 0 && styles.disabledOrderButton,
+          purchasedItems.length === 0 ? styles.disabledOrderButton : null,
         ]}
         disabled={isLoading || purchasedItems.length === 0}
         onPress={onOrderPressed}>
         <View style={styles.rowAndCenter}>
           <Text
-            style={[styles.orderText, isLoading && styles.loadingOrderText]}>
+            style={[
+              styles.orderText,
+              isLoading ? styles.loadingOrderText : null,
+            ]}>
             {isLoading ? 'Loading...' : 'Order'}
           </Text>
         </View>

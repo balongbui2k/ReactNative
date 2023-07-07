@@ -11,6 +11,7 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Images from '../../constants/Images';
 import {useNavigation} from '@react-navigation/native';
+import {ROUTES} from './../../constants/routeNames';
 
 const RestaurantDetails = ({
   name,
@@ -22,17 +23,18 @@ const RestaurantDetails = ({
   bannerImages,
 }) => {
   const navigation = useNavigation();
+  const onRestaurantScreenPressed = () => {
+    navigation.navigate(ROUTES.RESTAURANT_SCREEN, {
+      restaurantId,
+      bannerImages,
+    });
+  };
   return (
     <SafeAreaView>
       <ScrollView>
         <TouchableWithoutFeedback
           activeOpacity={0.8}
-          onPress={() =>
-            navigation.navigate('RestaurantScreen', {
-              restaurantId,
-              bannerImages,
-            })
-          }>
+          onPress={onRestaurantScreenPressed}>
           <View style={styles.container}>
             <View>
               <Image

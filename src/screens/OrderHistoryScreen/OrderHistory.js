@@ -5,13 +5,15 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {FlatList} from 'react-native-bidirectional-infinite-scroll';
 import {hitSlop} from './../../constants/GeneralStyles';
-import {useScrollToTop} from '@react-navigation/native';
+import {useScrollToTop, useNavigation} from '@react-navigation/native';
 import styles from '../OrderHistoryScreen/styles';
+import {ROUTES} from './../../constants/routeNames';
 
-const OrderHistoryScreen = ({navigation}) => {
+const OrderHistoryScreen = () => {
   const [orderHistory, setOrderHistory] = useState([]);
   const currentUser = auth().currentUser;
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const navigation = useNavigation();
 
   const ref = useRef(null);
   useScrollToTop(ref);
@@ -127,13 +129,15 @@ const OrderHistoryScreen = ({navigation}) => {
     </View>
   );
 
+  const onHomePressed = () => navigation.navigate(ROUTES.HOME);
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <TouchableOpacity
           style={styles.backButton}
           hitSlop={hitSlop}
-          onPress={() => navigation.navigate('Home')}>
+          onPress={onHomePressed}>
           <Ionicons name="home-outline" size={25} />
         </TouchableOpacity>
         <Text style={styles.title}>Order History</Text>
