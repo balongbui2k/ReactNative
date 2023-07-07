@@ -32,6 +32,7 @@ const RESTAURANT_DATA = [
     distance: 5,
     tags: ['pizza', 'chicken', 'sausage', 'indian', 'veg', 'mexican', 'bread'],
     images: require('../src/assets/staticImages/logo/dominos.png'),
+    categories: ['Chicken', 'Burgers', 'Rice Bowls', 'Snacks', 'Beverages'],
   },
   {
     restaurantId: '103',
