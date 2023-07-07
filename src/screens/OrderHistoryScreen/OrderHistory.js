@@ -1,15 +1,26 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import React, {useEffect, useState, useRef} from 'react';
+import {View, Text, TouchableOpacity, Image} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {FlatList} from 'react-native-bidirectional-infinite-scroll';
 import {hitSlop} from './../../constants/GeneralStyles';
+import {useScrollToTop} from '@react-navigation/native';
+import styles from '../OrderHistoryScreen/styles';
 
 const OrderHistoryScreen = ({navigation}) => {
   const [orderHistory, setOrderHistory] = useState([]);
   const currentUser = auth().currentUser;
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const ref = useRef(null);
+  useScrollToTop(ref);
+
+  const refreshList = () => {
+    if (ref.current) {
+      ref.current.scrollToOffset({offset: 0});
+    }
+  };
 
   useEffect(() => {
     if (currentUser) {
@@ -35,8 +46,6 @@ const OrderHistoryScreen = ({navigation}) => {
         }));
         return {...data, items};
       });
-      console.log('history', JSON.stringify(history, null, 2));
-
       setOrderHistory(history);
     } catch (error) {
       console.error('Error fetching order history:', error);
@@ -91,7 +100,6 @@ const OrderHistoryScreen = ({navigation}) => {
           <Text>Discount: ${item.discount}</Text>
           <Text>Total Price: ${item.totalPrice}</Text>
         </View>
-        {console.log('item>>>', JSON.stringify(item, null, 2))}
       </View>
     ));
 
@@ -129,8 +137,12 @@ const OrderHistoryScreen = ({navigation}) => {
           <Ionicons name="home-outline" size={25} />
         </TouchableOpacity>
         <Text style={styles.title}>Order History</Text>
+        <TouchableOpacity onPress={refreshList}>
+          <Text style={styles.refreshButton}>Refresh</Text>
+        </TouchableOpacity>
       </View>
       <FlatList
+        ref={ref}
         data={orderHistory}
         keyExtractor={(_, index) => index.toString()}
         renderItem={renderOrderItem}
@@ -143,91 +155,5 @@ const OrderHistoryScreen = ({navigation}) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 16,
-  },
-  backButton: {
-    marginRight: 8,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginLeft: '23%',
-  },
-  orderContainer: {
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: 16,
-    paddingRight: 8,
-    elevation: 3,
-    backgroundColor: '#fff',
-  },
-  orderDetailsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  orderDetailsText: {
-    fontWeight: '800',
-    fontSize: 16,
-    color: '#199',
-    marginRight: 10,
-  },
-  grandTotalText: {
-    fontWeight: 'bold',
-    fontSize: 23,
-    color: '#fb4',
-    marginLeft: 'auto',
-  },
-  itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  userInfoContainer: {
-    marginBottom: 10,
-  },
-  userInfoText: {
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  itemImage: {
-    width: 70,
-    height: 70,
-    marginRight: 10,
-    borderWidth: 1,
-    borderRadius: 4,
-    marginVertical: 6,
-  },
-  reOrderButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    backgroundColor: '#fb4',
-    borderRadius: 4,
-    color: '#fff',
-    marginLeft: '72%',
-    alignSelf: 'center',
-    fontWeight: '700',
-  },
-  noItemsContainer: {
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  noItemsText: {
-    fontStyle: 'italic',
-    color: '#888',
-    marginTop: '80%',
-    fontSize: 16,
-  },
-});
 
 export default OrderHistoryScreen;
