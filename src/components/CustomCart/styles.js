@@ -68,9 +68,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  listContainer: {
-    paddingBottom: 64, // Add more space in Flat list
-  },
+
   checkoutContainer: {
     position: 'absolute',
     bottom: 0,

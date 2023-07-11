@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
+  safeAreaView: {flex: 1, zIndex: 99},
   container: {
     backgroundColor: 'white',
     flex: 1,
@@ -8,7 +9,7 @@ const styles = StyleSheet.create({
     marginBottom: -20,
   },
   backgroundCurvedContainer: {
-    backgroundColor: '#c84',
+    backgroundColor: '#fb4',
     height: 2000,
     position: 'absolute',
     top: -1 * (2000 - 230),
@@ -31,6 +32,10 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 13,
     lineHeight: 13 * 1.4,
+  },
+  bellIcon: {
+    position: 'absolute',
+    right: 0,
   },
   selectedLocationText: {
     color: '#ffc',
@@ -97,6 +102,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
     opacity: isActive ? 1 : 0.3,
   }),
+  restaurantListContainer: {
+    flex: 1,
+    height: '100%',
+  },
   horizontalListContainer: {
     marginTop: 30,
     justifyContent: 'space-around',

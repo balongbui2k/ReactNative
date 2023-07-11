@@ -28,6 +28,9 @@ const styles = StyleSheet.create({
     lineHeight: 16 * 1.4,
     width: '100%',
   },
+  closeOutlineIcon: {
+    marginLeft: 8,
+  },
   backgroundImage: {
     position: 'absolute',
     width: 400,
@@ -37,7 +40,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
-    height: 500,
+    height: 540,
     position: 'absolute',
     bottom: 0,
     width: '100%',
@@ -141,6 +144,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
     padding: 14,
     borderTopColor: '#ddd',
+  },
+  listContainer: {
+    paddingBottom: 64, // Add more space in Flat list
   },
   cartIcon: {
     marginLeft: 16,
