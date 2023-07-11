@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ToastAndroid,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {useForm} from 'react-hook-form';
 import auth from '@react-native-firebase/auth';
@@ -37,11 +38,7 @@ const SignUpScreen = ({navigation}) => {
     setIsLoading(true);
     try {
       await auth().createUserWithEmailAndPassword(email, password);
-      ToastAndroid.show(
-        'User created and ready to sign in',
-        ToastAndroid.CENTER,
-        ToastAndroid.LONG,
-      );
+      Alert.alert('Success', 'User created and ready to sign in!');
       navigation.navigate(ROUTES.SIGN_IN_SCREEN);
     } catch (error) {
       setError(signUpErrors[error.code]);
