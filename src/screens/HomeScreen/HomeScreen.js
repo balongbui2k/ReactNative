@@ -2,9 +2,9 @@ import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  FlatList,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -13,12 +13,12 @@ import CATEGORIES from '../../constants/Foods';
 import FastImage from 'react-native-fast-image';
 import SortList from './SortList';
 import RESTAURANT_DATA from '../../../init_data/restaurants';
-import RestaurantDetails from './../../components/CustomRestaurants/RestaurantDetails';
 import styles from './styles';
 import SearchBar from './SearchBar';
 import CustomStatusBar from '../../constants/GeneralStyles';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from './../../constants/routeNames';
+import RestaurantList from './../../components/CustomRestaurants/RestaurantList';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -61,7 +61,7 @@ const HomeScreen = () => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, marginBottom: 16}}>
+    <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.container}>
         <CustomStatusBar />
 
@@ -76,7 +76,7 @@ const HomeScreen = () => {
               name="bell"
               size={22}
               color="white"
-              style={{position: 'absolute', right: 0}}
+              style={styles.bellIcon}
               onPress={onOrderHistoryPressed}
             />
             <View style={styles.alertBadge}>
@@ -100,7 +100,7 @@ const HomeScreen = () => {
             ))}
           </View>
         </View>
-        <View style={{flex: 1, height: '100%'}}>
+        <View style={styles.restaurantListContainer}>
           <View style={styles.horizontalListContainer}>
             <View style={styles.listHeader}>
               <Text style={styles.listHeaderTitle}>Top Rated</Text>
@@ -108,11 +108,11 @@ const HomeScreen = () => {
             </View>
             <SortList />
           </View>
-          <ScrollView>
-            {filteredRestaurants.map(item => (
-              <RestaurantDetails {...item} key={item?.restaurantId} />
-            ))}
-          </ScrollView>
+          <FlatList
+            data={filteredRestaurants}
+            keyExtractor={item => item?.restaurantId}
+            renderItem={({item}) => <RestaurantList {...item} />}
+          />
         </View>
       </View>
     </SafeAreaView>
