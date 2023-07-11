@@ -5,6 +5,7 @@ import CustomButton from '../../components/CustomButton/CustomButton';
 import {useForm} from 'react-hook-form';
 import {ROUTES} from './../../constants/routeNames';
 import {useNavigation} from '@react-navigation/native';
+import CustomStatusBar from '../../constants/GeneralStyles';
 
 const EMAIL_REGEX =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -16,15 +17,17 @@ const ForgotPasswordScreen = () => {
   const handleBackToSignIn = () => {
     navigation.navigate(ROUTES.SIGN_IN_SCREEN);
   };
-  const handleNewPassWordScreen = () => {
-    navigation.navigate(ROUTES.NEW_PASSWORD_SCREEN);
+  const handleVerificationScreen = () => {
+    navigation.navigate(ROUTES.VERIFICATION_SCREEN);
   };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.root}>
-        <Text style={styles.title}>Reset your password</Text>
-
+        <CustomStatusBar />
+        <View>
+          <Text style={styles.title}>Forgot password</Text>
+        </View>
         <CustomInput
           name="email"
           control={control}
@@ -40,7 +43,7 @@ const ForgotPasswordScreen = () => {
 
         <CustomButton
           text="Send"
-          onPress={handleSubmit(handleNewPassWordScreen)}
+          onPress={handleSubmit(handleVerificationScreen)}
         />
 
         <CustomButton
@@ -59,17 +62,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#051C60',
-    margin: 10,
-  },
-  text: {
-    color: 'gray',
-    marginVertical: 10,
-  },
-  link: {
-    color: '#FDB075',
+    fontSize: 23,
+    fontWeight: '700',
+    marginBottom: 16,
   },
 });
 
