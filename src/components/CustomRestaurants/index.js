@@ -1,5 +1,1 @@
-import RestaurantDetails from './RestaurantDetails';
-
-import RestaurantScreen from './RestaurantScreen';
-
-export default {RestaurantDetails, RestaurantScreen};
+export {default} from '../CustomRestaurants';
