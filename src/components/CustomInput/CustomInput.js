@@ -31,7 +31,7 @@ const CustomInput = ({
             />
           </View>
           {error && (
-            <Text style={{color: 'red', alignSelf: 'stretch'}}>
+            <Text style={styles.borderMessageError}>
               {error.message || 'Error'}
             </Text>
           )}
@@ -52,6 +52,10 @@ const styles = StyleSheet.create({
 
     paddingHorizontal: 10,
     marginVertical: 5,
+  },
+  borderMessageError: {
+    color: 'red',
+    alignSelf: 'stretch',
   },
 });
 
