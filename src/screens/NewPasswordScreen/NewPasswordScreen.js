@@ -32,13 +32,6 @@ const NewPasswordScreen = () => {
         <Text style={styles.title}>Reset your password</Text>
 
         <CustomInput
-          placeholder="Code"
-          name="code"
-          control={control}
-          rules={{required: 'Code is required'}}
-        />
-
-        <CustomInput
           name="password"
           control={control}
           placeholder="Enter your new password"
@@ -82,15 +75,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#051C60',
     margin: 10,
-  },
-  text: {
-    color: 'gray',
-    marginVertical: 10,
-  },
-  link: {
-    color: '#FDB075',
+    marginTop: 20,
   },
 });
 
