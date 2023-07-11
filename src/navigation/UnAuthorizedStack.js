@@ -5,6 +5,7 @@ import SignUpScreen from './../screens/SignUpScreen/SignUpScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import NewPasswordScreen from '../screens/NewPasswordScreen';
 import {ROUTES} from './../constants/routeNames';
+import VerificationScreen from './../screens/NewPasswordScreen/VerificationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +17,10 @@ export default function UnAuthorizedStack() {
       <Stack.Screen
         name={ROUTES.FORGOT_PASSWORD_SCREEN}
         component={ForgotPasswordScreen}
+      />
+      <Stack.Screen
+        name={ROUTES.VERIFICATION_SCREEN}
+        component={VerificationScreen}
       />
       <Stack.Screen
         name={ROUTES.NEW_PASSWORD_SCREEN}

@@ -36,10 +36,15 @@ const Navigation = () => {
             name={ROUTES.AUTHORIZED_STACK}
             component={AuthorizedStack}
           />
-        ) : (
+        ) : user === null ? (
           <Stack.Screen
             name={ROUTES.UN_AUTHORIZED_STACK}
             component={UnAuthorizedStack}
+          />
+        ) : (
+          <Stack.Screen
+            name={ROUTES.AUTHORIZED_STACK}
+            component={AuthorizedStack}
           />
         )}
       </Stack.Navigator>
