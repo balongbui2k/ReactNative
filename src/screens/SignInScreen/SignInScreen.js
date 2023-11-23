@@ -7,57 +7,57 @@ import {
   useWindowDimensions,
   Text,
   TextInput,
+  Image,
+  ActivityIndicator,
+  ToastAndroid,
 } from 'react-native';
-
 import Logo from '../../assets/images/2khung.png';
-import CustomButton from '../../components/CustomButton';
 import {useForm} from 'react-hook-form';
-import FastImage from 'react-native-fast-image';
 import auth from '@react-native-firebase/auth';
+import {signInErrors} from './../../constants/Validate';
+import CustomButton from './../../components/CustomButton/CustomButton';
+import {ROUTES} from './../../constants/routeNames';
 
 const SignInScreen = ({navigation}) => {
   const {
-    control,
     handleSubmit,
     formState: {errors},
   } = useForm();
+
+  const {height} = useWindowDimensions();
+
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const {height} = useWindowDimensions();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onSignInPressed = async () => {
+  const handleSignInPressed = async () => {
     if (!email || !password) {
       setError('Email and password cannot be empty!');
+      setTimeout(() => {
+        setError('');
+      }, 2000);
       return;
     }
-
+    setIsLoading(true);
     try {
-      // Assuming `auth` is imported and available in the scope
       await auth().signInWithEmailAndPassword(email, password);
-      console.warn('User signed in!');
-      navigation.navigate('Home');
+      ToastAndroid.show('Welcome Home', ToastAndroid.CENTER, ToastAndroid.LONG);
     } catch (error) {
-      if (error.code === 'auth/invalid-email') {
-        setError('Invalid email address!');
-      } else if (error.code === 'auth/user-disabled') {
-        setError('Your account has been disabled!');
-      } else if (error.code === 'auth/user-not-found') {
-        setError('Email is not found');
-      } else if (error.code === 'auth/wrong-password') {
-        setError('Invalid email or password!');
-      } else {
-        console.error(error);
-      }
+      setError(signInErrors[error.code] || 'Unknown error occurred');
+      setTimeout(() => {
+        setError('');
+      }, 2000);
     }
+    setIsLoading(false);
   };
 
   const onForgotPasswordPressed = () => {
-    navigation.navigate('ForgotPassword');
+    navigation.navigate(ROUTES.FORGOT_PASSWORD_SCREEN);
   };
 
   const onSignUpPress = () => {
-    navigation.navigate('SignUp');
+    navigation.navigate(ROUTES.SIGN_UP_SCREEN);
   };
 
   const handleGoogleButtonPress = () => {
@@ -71,21 +71,17 @@ const SignInScreen = ({navigation}) => {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={0}
-        style={styles.container}>
-        <View style={styles.root}>
-          <FastImage
-            source={Logo}
-            style={[styles.logo, {height: height * 0.3}]}
-            resizeMode="contain"
-          />
+        style={{height}}
+        behavior={Platform.OS === 'ios' ? 'padding' : null}>
+        <View style={styles.container}>
+          <Image source={Logo} style={styles.logo} resizeMode="contain" />
 
           <TextInput
             value={email}
             onChangeText={text => setEmail(text)}
             placeholder="Example@gmail.com"
             style={styles.input}
+            editable={!isLoading}
           />
           <TextInput
             value={password}
@@ -93,31 +89,45 @@ const SignInScreen = ({navigation}) => {
             placeholder="Password"
             secureTextEntry
             style={styles.input}
+            editable={!isLoading}
           />
 
-          {error !== '' && <Text style={styles.errorText}>*{error}</Text>}
+          {error !== '' && <Text style={styles.errorText}>{error}</Text>}
 
-          <CustomButton
-            text="Sign In"
-            onPress={handleSubmit(onSignInPressed)}
-          />
+          <View>
+            <CustomButton
+              text={isLoading ? 'Loading...' : 'Sign In'}
+              onPress={handleSubmit(handleSignInPressed)}
+              disabled={isLoading}
+            />
+            {isLoading && (
+              <View style={styles.loadingOverlay}>
+                <ActivityIndicator size={30} color="white" />
+              </View>
+            )}
+          </View>
 
           <CustomButton
             text="Forgot password?"
             onPress={onForgotPasswordPressed}
             type="TERTIARY"
+            disabled={isLoading}
           />
 
-          <Text>Or you can sign in with</Text>
+          <Text style={{marginLeft: 90, paddingBottom: 8}}>
+            ----Or you can sign in with----
+          </Text>
 
-          <View style={styles.socialButtonContainer}>
+          <View>
             <CustomButton
               text="Sign up with Google"
               onPress={handleGoogleButtonPress}
+              type="PRIMARY"
             />
             <CustomButton
               text="Sign up with Facebook"
               onPress={handleFacebookButtonPress}
+              type="PRIMARY"
             />
           </View>
 
@@ -125,6 +135,7 @@ const SignInScreen = ({navigation}) => {
             text="Don't have an account? Create one"
             onPress={onSignUpPress}
             type="TERTIARY"
+            disabled={isLoading}
           />
         </View>
       </KeyboardAvoidingView>
@@ -133,17 +144,35 @@ const SignInScreen = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  root: {
-    alignItems: 'center',
-    padding: 20,
+  container: {
+    flex: 1,
+    padding: 16,
   },
   logo: {
-    width: '70%',
-    height: '40%',
-    maxWidth: 300,
-    maxHeight: 200,
+    height: 150,
+    width: 150,
     marginBottom: 13,
-    marginLeft: 30,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  errorText: {
+    color: 'red',
+    marginVertical: 3,
+    marginRight: '30%',
+    width: '90%',
+  },
+  socialButtonContainer: {
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  input: {
+    backgroundColor: 'white',
+    width: '100%',
+    borderColor: '#e8e8e8',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginVertical: 5,
   },
   errorText: {
     color: 'red',
@@ -151,11 +180,11 @@ const styles = StyleSheet.create({
     marginRight: '30%',
     width: '70%',
   },
-  socialButtonContainer: {
-    width: 100,
-    height: 100,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
+  loadingOverlay: {
+    position: 'absolute',
+    marginLeft: '90%',
+    marginVertical: 16,
+    zIndex: 1,
   },
   input: {
     backgroundColor: 'white',

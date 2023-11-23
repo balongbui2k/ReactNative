@@ -4,7 +4,6 @@ const CATEGORIES = [
   {name: 'Pizza', logo: require('../assets/images/pizza.png')},
   {name: 'Desserts', logo: require('../assets/images/dessert.png')},
   {name: 'Drinks', logo: require('../assets/images/drinks.png')},
-  {name: 'Noodles', logo: require('../assets/images/plate.png')},
 ];
 
 export default CATEGORIES;

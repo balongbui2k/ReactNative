@@ -35,10 +35,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fb4',
   },
   container_SECONDARY: {
-    borderColor: '#fb4',
-    borderWidth: 2,
+    width: '100%',
+    padding: 15,
+    marginVertical: 5,
+    alignItems: 'center',
+    borderRadius: 5,
   },
-
   text: {
     fontWeight: 'bold',
     color: 'white',

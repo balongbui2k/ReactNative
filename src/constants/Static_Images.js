@@ -1,1 +1,0 @@
-const STATIC_IMAGE = [{}];

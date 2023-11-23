@@ -1,4 +1,8 @@
-import {ADD_TO_CART, REMOVE_FROM_CART} from '../actions/CartAction';
+import {
+  ADD_TO_CART,
+  REMOVE_FROM_CART,
+  RESET_CART,
+} from './../actions/CartAction';
 
 const initialState = {
   carts: {},
@@ -8,15 +12,12 @@ const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TO_CART:
       const existingItem = state.carts[action.payload.id];
-      console.log('existingItem', existingItem);
-      console.log('action', action);
+      // console.log('existingItem>>>', existingItem);
       if (existingItem) {
-        // Không được trả về kiểu dữ liệu là boolean, vì existingItem cần trả về là items
         return {
           ...state,
           carts: {
             ...state.carts,
-
             [action.payload.id]: {
               ...state.carts[action.payload.id],
               quantity: state.carts[action.payload.id].quantity + 1,
@@ -24,11 +25,11 @@ const cartReducer = (state = initialState, action) => {
           },
         };
       }
+
       const newItem = {
         ...action.payload,
         quantity: 1,
       };
-      console.log('newItem', newItem);
 
       return {
         ...state,
@@ -59,6 +60,9 @@ const cartReducer = (state = initialState, action) => {
         ...state,
         carts: updatedCart,
       };
+
+    case RESET_CART:
+      return {...state, carts: {}};
 
     default:
       return state;

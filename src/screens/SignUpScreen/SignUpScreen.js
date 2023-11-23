@@ -1,15 +1,32 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  ToastAndroid,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import {useForm} from 'react-hook-form';
 import auth from '@react-native-firebase/auth';
 import CustomInput from './../../components/CustomInput/CustomInput';
 import CustomButton from './../../components/CustomButton/CustomButton';
+import {signUpErrors} from './../../constants/Validate';
+import {ROUTES} from './../../constants/routeNames';
 
-const EMAIL_REGEX = /@gmail\.com$/;
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 const SignUpScreen = ({navigation}) => {
-  const {control, handleSubmit, watch} = useForm();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: {errors},
+  } = useForm();
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const pwd = watch('password');
 
@@ -18,40 +35,33 @@ const SignUpScreen = ({navigation}) => {
       setError('Email and password cannot be empty!');
       return;
     }
-
+    setIsLoading(true);
     try {
       await auth().createUserWithEmailAndPassword(email, password);
-      console.warn('User account created & signed in!');
-      navigation.navigate('SignIn');
+      Alert.alert('Success', 'User created and ready to sign in!');
+      navigation.navigate(ROUTES.SIGN_IN_SCREEN);
     } catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
-        setError('That email address is already in use!');
-      } else if (error.code === 'auth/invalid-email') {
-        setError('That email address is invalid!');
-      } else {
-        console.error(error);
-      }
+      setError(signUpErrors[error.code]);
+
+      setTimeout(() => {
+        setError('');
+      }, 2000);
     }
+    setIsLoading(false);
   };
 
-  const handleSignInPress = () => {
-    navigation.navigate('SignIn');
-  };
-
+  const handleBackToSignIn = () => navigation.navigate(ROUTES.SIGN_IN_SCREEN);
   const handleTermsOfUsePressed = () => {
-    setError('onTermsOfUsePressed');
+    console.warn('onTermsOfUsePressed');
   };
-
   const handlePrivacyPressed = () => {
-    setError('onPrivacyPressed');
+    console.warn('onPrivacyPressed');
   };
-
   const handleGoogleButtonPress = () => {
-    setError('onGoogleButtonPress');
+    console.warn('onGoogleButtonPress');
   };
-
   const handleFacebookButtonPress = () => {
-    setError('onFacebookButtonPress');
+    console.warn('onFacebookButtonPress');
   };
 
   return (
@@ -71,6 +81,9 @@ const SignUpScreen = ({navigation}) => {
             },
           }}
         />
+
+        {error !== '' && <Text style={styles.errorText}>{error}</Text>}
+
         <CustomInput
           name="password"
           control={control}
@@ -79,13 +92,14 @@ const SignUpScreen = ({navigation}) => {
           rules={{
             required: 'Password is required',
             minLength: {
-              value: 8,
-              message: 'Password should be at least 8 characters long',
+              value: 6,
+              message: 'Password should be at least 6 characters long',
             },
           }}
         />
+
         <CustomInput
-          name="password-repeat"
+          name="repeatPassword"
           control={control}
           placeholder="Repeat Password"
           secureTextEntry
@@ -94,7 +108,18 @@ const SignUpScreen = ({navigation}) => {
           }}
         />
 
-        <CustomButton text="Register" onPress={handleSubmit(handleRegister)} />
+        <View>
+          <CustomButton
+            text={isLoading ? 'Loading...' : 'Register'}
+            onPress={handleSubmit(handleRegister)}
+            disable={isLoading}
+          />
+          {isLoading && (
+            <View style={styles.registerLoading}>
+              <ActivityIndicator color="white" size={30} />
+            </View>
+          )}
+        </View>
 
         <Text style={styles.text}>
           By registering, you confirm that you accept our{' '}
@@ -122,11 +147,9 @@ const SignUpScreen = ({navigation}) => {
 
         <CustomButton
           text="Have an account? Sign in"
-          onPress={handleSignInPress}
+          onPress={handleBackToSignIn}
           type="TERTIARY"
         />
-
-        {error !== '' && <Text style={styles.errorText}>{error}</Text>}
       </View>
     </ScrollView>
   );
@@ -134,8 +157,8 @@ const SignUpScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   root: {
-    alignItems: 'center',
-    padding: 20,
+    flex: 1,
+    padding: 16,
   },
   title: {
     fontSize: 24,
@@ -147,8 +170,23 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginVertical: 10,
   },
+  registerLoading: {
+    position: 'absolute',
+    marginLeft: '90%',
+    marginVertical: 16,
+    zIndex: 1,
+  },
   link: {
-    color: '#FDB075',
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  socialButtonContainer: {
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  errorText: {
+    color: 'red',
+    marginVertical: 4,
   },
 });
 
