@@ -1,101 +1,141 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
-  Image,
   StyleSheet,
-  useWindowDimensions,
   ScrollView,
   KeyboardAvoidingView,
+  useWindowDimensions,
+  Text,
+  TextInput,
+  Image,
+  ActivityIndicator,
+  ToastAndroid,
 } from 'react-native';
-
-import Logo from '../../../assets/images/mainLogo.png';
-import CustomInput from '../../components/CustomInput';
-import CustomButton from '../../components/CustomButton';
-import {useNavigation} from '@react-navigation/native';
+import Logo from '../../assets/images/2khung.png';
 import {useForm} from 'react-hook-form';
-import axios from 'axios';
+import auth from '@react-native-firebase/auth';
+import {signInErrors} from './../../constants/Validate';
+import CustomButton from './../../components/CustomButton/CustomButton';
+import {ROUTES} from './../../constants/routeNames';
 
-const SignInScreen = () => {
-  const {height} = useWindowDimensions();
-  const navigation = useNavigation();
-
+const SignInScreen = ({navigation}) => {
   const {
-    control,
     handleSubmit,
     formState: {errors},
   } = useForm();
 
-  const onSignInPressed = async () => {
-    console.log('data');
+  const {height} = useWindowDimensions();
 
-    try {
-      const response = await axios.get(
-        'https://jsonplaceholder.typicode.com/users',
-      );
-      console.log(JSON.stringify(response, null, 2));
-      navigation.navigate('Home');
-    } catch (error) {
-      console.error('Loi con me no roi');
+  const [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSignInPressed = async () => {
+    if (!email || !password) {
+      setError('Email and password cannot be empty!');
+      setTimeout(() => {
+        setError('');
+      }, 2000);
+      return;
     }
+    setIsLoading(true);
+    try {
+      await auth().signInWithEmailAndPassword(email, password);
+      ToastAndroid.show('Welcome Home', ToastAndroid.CENTER, ToastAndroid.LONG);
+    } catch (error) {
+      setError(signInErrors[error.code] || 'Unknown error occurred');
+      setTimeout(() => {
+        setError('');
+      }, 2000);
+    }
+    setIsLoading(false);
   };
 
   const onForgotPasswordPressed = () => {
-    navigation.navigate('ForgotPassword');
+    navigation.navigate(ROUTES.FORGOT_PASSWORD_SCREEN);
   };
 
   const onSignUpPress = () => {
-    navigation.navigate('SignUp');
+    navigation.navigate(ROUTES.SIGN_UP_SCREEN);
+  };
+
+  const handleGoogleButtonPress = () => {
+    console.warn('onGoogleButtonPress');
+  };
+
+  const handleFacebookButtonPress = () => {
+    console.warn('onFacebookButtonPress');
   };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={30}
-        style={styles.container}>
-        <View style={styles.root}>
-          <Image
-            source={Logo}
-            style={[styles.logo, {height: height * 0.3}]}
-            resizeMode="contain"
-          />
+        style={{height}}
+        behavior={Platform.OS === 'ios' ? 'padding' : null}>
+        <View style={styles.container}>
+          <Image source={Logo} style={styles.logo} resizeMode="contain" />
 
-          <CustomInput
-            name="username"
-            placeholder="Username"
-            control={control}
-            rules={{required: 'Username is required'}}
+          <TextInput
+            value={email}
+            onChangeText={text => setEmail(text)}
+            placeholder="Example@gmail.com"
+            style={styles.input}
+            editable={!isLoading}
           />
-
-          <CustomInput
-            name="password"
+          <TextInput
+            value={password}
+            onChangeText={text => setPassword(text)}
             placeholder="Password"
             secureTextEntry
-            control={control}
-            rules={{
-              required: 'Password is required',
-              minLength: {
-                value: 8,
-                message: 'Password should be minimum 8 characters long',
-              },
-            }}
+            style={styles.input}
+            editable={!isLoading}
           />
 
-          <CustomButton
-            text="Sign In"
-            onPress={handleSubmit(onSignInPressed)}
-          />
+          {error !== '' && <Text style={styles.errorText}>{error}</Text>}
+
+          <View>
+            <CustomButton
+              text={isLoading ? 'Loading...' : 'Sign In'}
+              onPress={handleSubmit(handleSignInPressed)}
+              disabled={isLoading}
+            />
+            {isLoading && (
+              <View style={styles.loadingOverlay}>
+                <ActivityIndicator size={30} color="white" />
+              </View>
+            )}
+          </View>
 
           <CustomButton
             text="Forgot password?"
             onPress={onForgotPasswordPressed}
             type="TERTIARY"
+            disabled={isLoading}
           />
+
+          <Text style={{marginLeft: 90, paddingBottom: 8}}>
+            ----Or you can sign in with----
+          </Text>
+
+          <View>
+            <CustomButton
+              text="Sign up with Google"
+              onPress={handleGoogleButtonPress}
+              type="PRIMARY"
+            />
+            <CustomButton
+              text="Sign up with Facebook"
+              onPress={handleFacebookButtonPress}
+              type="PRIMARY"
+            />
+          </View>
 
           <CustomButton
             text="Don't have an account? Create one"
             onPress={onSignUpPress}
             type="TERTIARY"
+            disabled={isLoading}
           />
         </View>
       </KeyboardAvoidingView>
@@ -104,14 +144,58 @@ const SignInScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  root: {
-    alignItems: 'center',
-    padding: 20,
+  container: {
+    flex: 1,
+    padding: 16,
   },
   logo: {
+    height: 150,
+    width: 150,
+    marginBottom: 13,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  errorText: {
+    color: 'red',
+    marginVertical: 3,
+    marginRight: '30%',
+    width: '90%',
+  },
+  socialButtonContainer: {
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  input: {
+    backgroundColor: 'white',
+    width: '100%',
+    borderColor: '#e8e8e8',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginVertical: 5,
+  },
+  errorText: {
+    color: 'red',
+    marginVertical: 3,
+    marginRight: '30%',
     width: '70%',
-    maxWidth: 300,
-    maxHeight: 200,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    marginLeft: '90%',
+    marginVertical: 16,
+    zIndex: 1,
+  },
+  input: {
+    backgroundColor: 'white',
+    width: '100%',
+
+    borderColor: '#e8e8e8',
+    borderWidth: 1,
+    borderRadius: 5,
+
+    paddingHorizontal: 10,
+    marginVertical: 5,
   },
 });
 

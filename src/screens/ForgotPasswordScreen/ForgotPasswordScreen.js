@@ -1,42 +1,54 @@
 import React from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import CustomInput from '../../components/CustomInput';
-import CustomButton from '../../components/CustomButton';
-import {useNavigation} from '@react-navigation/native';
+import CustomInput from '../../components/CustomInput/CustomInput';
+import CustomButton from '../../components/CustomButton/CustomButton';
 import {useForm} from 'react-hook-form';
+import {ROUTES} from './../../constants/routeNames';
+import {useNavigation} from '@react-navigation/native';
+import CustomStatusBar from '../../constants/GeneralStyles';
+
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 const ForgotPasswordScreen = () => {
-  const {control, handleSubmit} = useForm();
   const navigation = useNavigation();
+  const {control, handleSubmit} = useForm();
 
-  const onSendPressed = data => {
-    console.warn(data);
-    navigation.navigate('NewPassword');
+  const handleBackToSignIn = () => {
+    navigation.navigate(ROUTES.SIGN_IN_SCREEN);
   };
-
-  const onSignInPress = () => {
-    navigation.navigate('SignIn');
+  const handleVerificationScreen = () => {
+    navigation.navigate(ROUTES.VERIFICATION_SCREEN);
   };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.root}>
-        <Text style={styles.title}>Reset your password</Text>
-
+        <CustomStatusBar />
+        <View>
+          <Text style={styles.title}>Forgot password</Text>
+        </View>
         <CustomInput
-          name="username"
+          name="email"
           control={control}
-          placeholder="Username"
+          placeholder="Email"
           rules={{
-            required: 'Username is required',
+            required: 'Email is required',
+            pattern: {
+              value: EMAIL_REGEX,
+              message: 'Email is invalid ',
+            },
           }}
         />
 
-        <CustomButton text="Send" onPress={handleSubmit(onSendPressed)} />
+        <CustomButton
+          text="Send"
+          onPress={handleSubmit(handleVerificationScreen)}
+        />
 
         <CustomButton
-          text="Back to Sign in"
-          onPress={onSignInPress}
+          text="Back to Sign in screen"
+          onPress={handleBackToSignIn}
           type="TERTIARY"
         />
       </View>
@@ -50,17 +62,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#051C60',
-    margin: 10,
-  },
-  text: {
-    color: 'gray',
-    marginVertical: 10,
-  },
-  link: {
-    color: '#FDB075',
+    fontSize: 23,
+    fontWeight: '700',
+    marginBottom: 16,
   },
 });
 

@@ -1,26 +1,52 @@
-import React from 'react';
-import SignInScreen from '../screens/SignInScreen';
-import SignUpScreen from '../screens/SignUpScreen';
-import ConfirmEmailScreen from '../screens/ConfirmEmailScreen';
-import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
-import NewPasswordScreen from '../screens/NewPasswordScreen';
-import HomeScreen from '../screens/HomeScreen';
-
+import React, {useState, useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import auth from '@react-native-firebase/auth';
+
+import AuthorizedStack from './AuthorizedStack';
+import UnAuthorizedStack from './UnAuthorizedStack';
+import {ROUTES} from './../constants/routeNames';
 
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = auth().onAuthStateChanged(user => {
+      setUser(user);
+      if (initializing) {
+        setInitializing(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (initializing) {
+    return null;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="ConfirmEmail" component={ConfirmEmailScreen} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
+        {user ? (
+          <Stack.Screen
+            name={ROUTES.AUTHORIZED_STACK}
+            component={AuthorizedStack}
+          />
+        ) : user === null ? (
+          <Stack.Screen
+            name={ROUTES.UN_AUTHORIZED_STACK}
+            component={UnAuthorizedStack}
+          />
+        ) : (
+          <Stack.Screen
+            name={ROUTES.AUTHORIZED_STACK}
+            component={AuthorizedStack}
+          />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
